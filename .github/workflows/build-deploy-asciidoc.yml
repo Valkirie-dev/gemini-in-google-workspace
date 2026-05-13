@@ -19,46 +19,55 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Используем тот же контейнер, что был в GitLab
+    container:
+      image: asciidoctor/docker-asciidoctor
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-
-      - name: Install Asciidoctor
-        run: gem install asciidoctor
-
-      - name: Prepare Output Directory
-        run: mkdir -p out
-
-      - name: Copy supporting files
+      - name: Build AsciiDoc
         run: |
-          if [ -d "docs" ]; then
-            # Копируем всё, кроме .adoc, сохраняя структуру папок
-            rsync -av --exclude='*.adoc' docs/ out/
-          else
-            echo "Error: Directory 'docs' not found"
-            exit 1
-          fi
-
-      - name: Build All AsciiDoc files
-        run: |
-          # Ищем все .adoc файлы и конвертируем их
-          # -a relfilesuffix=.html меняет ссылки с .adoc на .html в готовых страницах
-          find docs -name "*.adoc" -exec asciidoctor \
-            -a toc=left \
+          mkdir -p out
+          # Выполняем команду в точности как в GitLab
+          # Обратите внимание: $GITHUB_WORKSPACE заменяет $PWD для надежности
+          asciidoctor \
+            -a toc! \
             -a nofooter \
             -a data-uri \
             -a stem=latexmath \
-            -a relfilesuffix=.html \
             -a stylesdir=$GITHUB_WORKSPACE/docs \
             -a stylesheet=my-stylesheet.css \
+            -a copycss=$GITHUB_WORKSPACE/docs/my-stylesheet.css \
             -R docs \
             -D out \
-            {} +
+            "**/*.adoc"
+
+      - name: Copy supporting files
+        run: |
+          cd docs
+          # Используем вашу логику с cpio для сохранения структуры
+          find . \( \
+            -name '*.ipynb' -o \
+            -name '*.py' -o \
+            -name '*.yaml' -o \
+            -name '*.yml' -o \
+            -name '*.conf' -o \
+            -name '*.zip' -o \
+            -name '*.pdf' -o \
+            -name '*.csv' -o \
+            -name '*.txt' -o \
+            -name '*.html' -o \
+            -name '*.css' -o \
+            -name '*.js' -o \
+            -name '*.mp4' -o \
+            -name '*.gif' -o \
+            -name '*.png' -o \
+            -name '*.jpg' -o \
+            -name '*.jpeg' -o \
+            -name '*.svg' \
+          \) -print | cpio -pdm ../out
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
