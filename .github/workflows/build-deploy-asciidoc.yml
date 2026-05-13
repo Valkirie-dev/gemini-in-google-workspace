@@ -35,23 +35,25 @@ jobs:
         run: mkdir -p out
 
       - name: Copy supporting files
-        # Копируем картинки и ресурсы из docs в out
         run: |
           if [ -d "docs" ]; then
+            # Копируем всё, кроме .adoc, сохраняя структуру папок
             rsync -av --exclude='*.adoc' docs/ out/
           else
-            echo "Error: Directory 'docs' not found in the root of the repository"
+            echo "Error: Directory 'docs' not found"
             exit 1
           fi
 
-      - name: Build AsciiDoc to HTML
-        # Файл docs/index.adoc станет файлом out/index.html
+      - name: Build All AsciiDoc files
         run: |
+          # Ищем все .adoc файлы и конвертируем их
+          # -a relfilesuffix=.html меняет ссылки с .adoc на .html в готовых страницах
           find docs -name "*.adoc" -exec asciidoctor \
-            -a toc! \
+            -a toc=left \
             -a nofooter \
             -a data-uri \
             -a stem=latexmath \
+            -a relfilesuffix=.html \
             -a stylesdir=$GITHUB_WORKSPACE/docs \
             -a stylesheet=my-stylesheet.css \
             -R docs \
