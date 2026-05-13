@@ -1,0 +1,81 @@
+image::images/header.jpg[Hat, width=100%]
+
+= Course Overview: NotebookLM for IT Outsourcing Professionals
+
+
+This course introduces *NotebookLM* as an enterprise-ready AI tool for IT outsourcing professionals. It focuses on practical, responsible usage of generative AI for working with proprietary and client-owned data in real project environments.
+
+== What You Will Learn
+
+====
+
+* How NotebookLM interacts with your own data to support analysis, learning, and decision-making.
+* Core features, capabilities, and limitations of the tool.
+* Privacy, security, and data-handling principles for enterprise use.
+* How to upload, manage, and optimize sources and file formats.
+* How to query documents, create notes, and extract insights effectively.
+
+====
+
+
+== Core Topics Covered
+
+====
+
+* *NotebookLM interface*, workspace, and homepage navigation.
+* *Source management*: file uploads, pasted text, web sources, and deep search.
+* Supported file formats and ingestion constraints.
+* Google Drive integration and repository usage.
+* Text-based interaction and AI-assisted note-taking.
+
+====
+
+== NotebookLM Studio Capabilities
+
+====
+
+* *Audio and video overviews* for technical and meeting content.
+* *Mind maps* for visualizing systems and relationships.
+* *Reports and summaries* with customizable prompts.
+* *Flashcards and quizzes* for technical upskilling.
+* *Infographics and slide decks* for stakeholder communication.
+* *Data tables* for structuring unstructured requirements.
+
+====
+
+
+== Role-Based & SDLC Use Cases
+
+====
+
+* Best practices for *Developers*, *QAs*, and *Project Managers*.
+* Applying NotebookLM across SDLC phases:
+** Requirements and discovery.
+** Technical research and analysis.
+** Documentation and knowledge sharing.
+** Reporting and review.
+
+====
+
+
+== Course Focus
+
+====
+
+* Real-world workflows and practical adoption.
+* Responsible and policy-compliant AI usage.
+* Productivity improvements in IT outsourcing projects.
+
+====
+
+=== *List of Modules*
+
+====
+
+ifdef::env-name[:relfilesuffix: .adoc]
+
+* xref:Module-1_Introduction-to-NotebookLM/module-1_main.adoc[Module 1: Introduction to NotebookLM]
+
+====
+
+image::images/footer.png[Under, width=100%]

@@ -1,0 +1,36 @@
+image::../images/header.jpg[Hat, width=100%]
+
+= Module 1: Introduction to NotebookLM
+
+
+== Module Overview
+====
+
+This foundational module serves as your gateway to mastering NotebookLM within an enterprise environment. We will explore how this AI-powered research and writing assistant differs from standard LLMs by focusing on "grounded" intelligence—AI that base its answers strictly on the sources you provide.
+
+The goal of this module is to transition from general AI curiosity to a structured understanding of how to use NotebookLM as a professional tool that respects data boundaries and enhances analytical workflows.
+
+====
+
+== Key Learning Points
+
+====
+
+* Understanding the concept of "Source-Grounded AI" and its value for IT professionals.
+* Distinguishing between personal use and enterprise-grade data handling.
+* Navigating the security landscape when working with proprietary code and client documentation.
+* Identifying the immediate productivity wins in research, discovery, and reporting phases.
+
+====
+
+=== *List of Units*
+
+====
+
+ifdef::env-name[:relfilesuffix: .adoc]
+
+* xref:Unit-1_Core-features-and-benefits/unit-1_main.adoc[Unit 1: Core features and benefits]
+
+====
+
+image::../images/footer.png[Under, width=100%]

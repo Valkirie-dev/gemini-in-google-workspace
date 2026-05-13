@@ -1,0 +1,24 @@
+image::../../images/header.jpg[Hat, width=100%]
+
+= Unit 1: Core Features and Benefits
+
+Learn how NotebookLM acts as an *"Information Alchemist"* for work, allowing you to organize, analyze, and optimize your workflows using AI. Unlike traditional chatbots, NotebookLM creates a private instance of AI that knows only what you tell it.
+
+* **Information Alchemy:** Learn to transform raw, scattered data (PDFs, transcripts, docs) into structured insights.
+* **Direct Interaction:** Explore the interface designed for side-by-side analysis of your sources and AI-generated notes.
+* **Productivity Boost:** Understand how to optimize the speed at which insights are derived from data (time-to-insight) during complex project onboarding or technical research.
+* **Contextual Awareness:** See how the tool maintains the link between AI answers and original source citations.
+
+== *List of materials*
+
+====
+
+ifdef::env-name[:relfilesuffix: .adoc]
+
+* xref:Theory.adoc[Theory]
+* xref:Practice.adoc[Practice]
+
+
+====
+
+image::../../images/footer.png[Under, width=100%]

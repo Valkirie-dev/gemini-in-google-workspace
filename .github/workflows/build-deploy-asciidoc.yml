@@ -27,7 +27,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: true
 
       - name: Install Asciidoctor
         run: gem install asciidoctor
@@ -36,13 +35,18 @@ jobs:
         run: mkdir -p out
 
       - name: Copy supporting files
-        # Копируем всё из docs в out, исключая исходники .adoc
+        # Копируем картинки и ресурсы из docs в out
         run: |
-          rsync -av --exclude='*.adoc' docs/ out/
+          if [ -d "docs" ]; then
+            rsync -av --exclude='*.adoc' docs/ out/
+          else
+            echo "Error: Directory 'docs' not found in the root of the repository"
+            exit 1
+          fi
 
       - name: Build AsciiDoc to HTML
+        # Файл docs/index.adoc станет файлом out/index.html
         run: |
-          # Ищем все .adoc файлы и компилируем их с сохранением структуры
           find docs -name "*.adoc" -exec asciidoctor \
             -a toc! \
             -a nofooter \
