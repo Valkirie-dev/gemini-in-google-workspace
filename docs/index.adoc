@@ -72,7 +72,7 @@ This course introduces *NotebookLM* as an enterprise-ready AI tool for IT outsou
 
 ====
 
-ifdef::env-name[:relfilesuffix: .adoc]
+ifndef::env-github[:relfilesuffix: .html]
 
 * xref:Module-1_Introduction-to-NotebookLM/module-1_main.adoc[Module 1: Introduction to NotebookLM]
 
