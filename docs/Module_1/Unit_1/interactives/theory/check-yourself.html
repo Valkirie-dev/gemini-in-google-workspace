@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced RAG (Quiz)</title>
+    
+    <!-- Libraries -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- Design Tokens -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00A6EB',
+                        accent: '#E60036',
+                        dark: '#302A40',
+                        muted: '#5f6c7b',
+                        lightblue: '#81D0F4',
+                        softred: '#EF958C',
+                        darkblue: '#2A668E',
+                        slate: '#937C8A',
+                        darkred: '#951B3C'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base overrides for accurate iframe embedding */
+        body { 
+            font-family: 'Manrope', sans-serif; 
+            background-color: transparent; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+        }
+        
+        .custom-radio:checked + div { border-color: #00A6EB; background-color: #f0f9ff; }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+        .explanation-box {
+            background-color: #f0f9ff;
+            border-left: 4px solid #00A6EB;
+        }
+        
+        .explanation-box.incorrect {
+            background-color: #fff1f2;
+            border-left-color: #E60036;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- Icons ---
+        const IconBase = ({ children, size = 20, className = "", ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
+        );
+        const CheckCircle = (props) => <IconBase {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></IconBase>;
+        const XCircle = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></IconBase>;
+        const Info = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></IconBase>;
+        const RefreshCw = (props) => <IconBase {...props}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></IconBase>;
+
+        // --- Question Data ---
+        const QUESTIONS = [
+            {
+                id: 1,
+                question: "In the NotebookLM workflow, what is the primary purpose of Retrieval-Augmented Generation (RAG)?",
+                options: [
+                    { id: 'a', text: "To expand the AI's knowledge base using the entire internet." },
+                    { id: 'b', text: "To ensure the AI’s responses are based strictly on the user’s provided sources, making them accurate and traceable." },
+                    { id: 'c', text: "To generate creative fiction based on user prompts." }
+                ],
+                correctId: 'b',
+                explanation: "RAG grounds the AI in your specific documents to ensure accuracy and traceability."
+            },
+            {
+                id: 2,
+                question: "According to the 'Query Execution' phase, what is the immediate step after a user's question is converted into an embedding?",
+                options: [
+                    { id: 'a', text: "The system generates a final answer immediately." },
+                    { id: 'b', text: "A specialized subsystem performs mathematical matching against the vector database." },
+                    { id: 'c', text: "The question is sent to Google Search for verification." }
+                ],
+                correctId: 'b',
+                explanation: "The query vector is mathematically matched against chunk vectors in the database to find relevant content."
+            },
+            {
+                id: 3,
+                question: "Why is the citation system in NotebookLM considered a critical tool, even with its source-grounded architecture?",
+                options: [
+                    { id: 'a', text: "Because it makes the notes look more academic." },
+                    { id: 'b', text: "Because the final answer generation is still based on the probabilistic nature of LLMs, which can lead to occasional inaccuracies." },
+                    { id: 'c', text: "Because users are required to cite sources by law." }
+                ],
+                correctId: 'b',
+                explanation: "Even with RAG, LLMs are probabilistic. Citations allow you to verify the AI's claims against the original text."
+            }
+        ];
+
+        function RAGQuizWidget() {
+            const [answers, setAnswers] = useState({});
+            const [submitted, setSubmitted] = useState(false);
+            const [score, setScore] = useState(0);
+            const [passed, setPassed] = useState(false);
+
+            // Resizing logic injected exactly as required
+            const notifyResize = () => {
+                if (window.parent) {
+                    window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+                }
+            };
+
+            useEffect(() => {
+                // Register activity with tracker
+                if (window.ActivityClient) {
+                    const max = QUESTIONS.length;
+                    window.ActivityClient.registerActivity(max);
+                }
+
+                // Dedicated observer for accurate embedding height
+                const observer = new ResizeObserver(() => notifyResize());
+                setTimeout(() => { observer.observe(document.body); notifyResize(); }, 100);
+                return () => observer.disconnect();
+            }, []);
+
+            // Triggers a manual resize notify when revealing result blocks
+            useEffect(() => {
+                notifyResize();
+            }, [submitted, answers]);
+
+            const handleOptionChange = (qId, optionId) => {
+                if (submitted) return; 
+                setAnswers(prev => ({ ...prev, [qId]: optionId }));
+            };
+
+            const handleSubmit = () => {
+                let calculatedScore = 0;
+                const maxScore = QUESTIONS.length;
+                
+                QUESTIONS.forEach(q => {
+                    if (answers[q.id] === q.correctId) {
+                        calculatedScore += 1;
+                    }
+                });
+
+                setScore(calculatedScore);
+                setPassed(calculatedScore === 3); // Strict passing score 3/3
+                setSubmitted(true);
+
+                // --- SEND SCORE ---
+                if (window.ActivityClient) {
+                    window.ActivityClient.sendScore(null, calculatedScore, maxScore);
+                } else {
+                    console.warn("ActivityClient script not found.");
+                }
+            };
+
+            const handleRetry = () => {
+                setAnswers({});
+                setSubmitted(false);
+                setScore(0);
+                setPassed(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const allAnswered = QUESTIONS.every(q => answers[q.id]);
+
+            return (
+                <div className="p-4 md:p-6 w-full max-w-3xl mx-auto">
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                        
+                        {/* Header с добавленным <h2> */}
+                        <div className="mb-8 border-b border-gray-100 pb-4">
+                            <h2 className="text-2xl font-extrabold text-dark mb-1">Advanced RAG (Quiz)</h2>
+                            <p className="text-muted text-sm md:text-base">
+                                Test your understanding of the internal mechanics.
+                                <br/>
+                                <span className="font-bold text-primary">Passing Score: 3/3 (100%)</span>
+                            </p>
+                        </div>
+
+                        {/* Questions List */}
+                        <div className="space-y-8">
+                            {QUESTIONS.map((q, index) => {
+                                const userAnswer = answers[q.id];
+                                const isCorrect = userAnswer === q.correctId;
+                                const showFeedback = submitted;
+
+                                return (
+                                    <div key={q.id} className={`p-4 rounded-xl transition-all ${showFeedback && !isCorrect ? 'bg-red-50/50' : 'bg-transparent'}`}>
+                                        <h3 className="text-lg font-bold text-dark mb-4 flex gap-2">
+                                            <span className="text-muted opacity-50">{index + 1}.</span> 
+                                            {q.question}
+                                        </h3>
+
+                                        <div className="space-y-3">
+                                            {q.options.map(opt => (
+                                                <label key={opt.id} className={`block relative cursor-pointer group ${submitted ? 'cursor-default' : ''}`}>
+                                                    <input
+                                                        type="radio"
+                                                        name={`q-${q.id}`}
+                                                        value={opt.id}
+                                                        checked={userAnswer === opt.id}
+                                                        onChange={() => handleOptionChange(q.id, opt.id)}
+                                                        disabled={submitted}
+                                                        className="custom-radio sr-only"
+                                                    />
+                                                    <div className={`p-3 pl-10 rounded-lg border-2 transition-all relative
+                                                        ${userAnswer === opt.id 
+                                                            ? 'border-primary bg-blue-50' 
+                                                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                                                        }
+                                                        ${submitted && userAnswer === opt.id && !isCorrect ? '!border-accent !bg-red-50' : ''}
+                                                        ${submitted && userAnswer === opt.id && isCorrect ? '!border-green-500 !bg-green-50' : ''}
+                                                    `}>
+                                                        {/* Custom Radio Circle */}
+                                                        <div className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
+                                                            ${userAnswer === opt.id ? 'border-primary' : 'border-gray-300'}
+                                                            ${submitted && userAnswer === opt.id && !isCorrect ? '!border-accent' : ''}
+                                                            ${submitted && userAnswer === opt.id && isCorrect ? '!border-green-500' : ''}
+                                                        `}>
+                                                            {userAnswer === opt.id && (
+                                                                <div className={`w-2.5 h-2.5 rounded-full 
+                                                                    ${submitted && !isCorrect ? 'bg-accent' : submitted && isCorrect ? 'bg-green-500' : 'bg-primary'}
+                                                                `}></div>
+                                                            )}
+                                                        </div>
+                                                        
+                                                        <span className={`text-sm md:text-base font-medium ${userAnswer === opt.id ? 'text-dark' : 'text-slate-600'}`}>
+                                                            {opt.text}
+                                                        </span>
+                                                    </div>
+                                                </label>
+                                            ))}
+                                        </div>
+
+                                        {/* Feedback Area */}
+                                        {showFeedback && (
+                                            <div className="mt-4 animate-fade-in">
+                                                {isCorrect ? (
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
+                                                            <CheckCircle size={18} /> Correct
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className="flex items-center gap-2 text-accent font-bold text-sm">
+                                                            <XCircle size={18} /> Incorrect
+                                                        </div>
+                                                        <div className="explanation-box incorrect p-3 rounded-r-lg text-sm text-dark flex items-start gap-2">
+                                                            <Info size={18} className="text-accent shrink-0 mt-0.5" />
+                                                            <span><strong>Clue:</strong> {q.explanation}</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Footer / Actions */}
+                        <div className="mt-10 pt-6 border-t border-gray-100 flex flex-col items-center">
+                            
+                            {!submitted ? (
+                                <button 
+                                    onClick={handleSubmit}
+                                    disabled={!allAnswered}
+                                    className={`px-8 py-3 rounded-full font-bold text-white shadow-lg transition-all transform 
+                                        ${allAnswered 
+                                            ? 'bg-primary hover:bg-darkblue hover:scale-105 hover:shadow-xl cursor-pointer' 
+                                            : 'bg-gray-300 cursor-not-allowed opacity-70'}
+                                    `}
+                                >
+                                    Submit Answers
+                                </button>
+                            ) : (
+                                <div className="w-full text-center animate-fade-in">
+                                    <div className="mb-6">
+                                        <div className="text-sm font-bold uppercase tracking-widest text-muted mb-1">Your Score</div>
+                                        <div className={`text-5xl font-extrabold mb-2 ${passed ? 'text-green-500' : 'text-accent'}`}>
+                                            {score}/3
+                                        </div>
+                                        <div className={`text-lg font-bold ${passed ? 'text-green-600' : 'text-slate-600'}`}>
+                                            {passed ? "Solid understanding of the RAG pipeline!" : "Review the mechanics and try again."}
+                                        </div>
+                                    </div>
+                                    
+                                    <button 
+                                        onClick={handleRetry}
+                                        className="px-8 py-3 rounded-full font-bold text-white bg-dark hover:bg-black shadow-lg transition-all flex items-center gap-2 mx-auto"
+                                    >
+                                        <RefreshCw size={18} /> Try Again
+                                    </button>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<RAGQuizWidget />);
+    </script>
+    <script src='/util/scripts/client.js'></script>
+</body>
+</html>

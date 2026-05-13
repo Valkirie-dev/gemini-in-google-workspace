@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary Dashboard</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --c-blue: #00A6EB;
+            --c-red: #E60036;
+            --c-dark: #302A40;
+            --c-light-blue: #81D0F4;
+            --c-soft-red: #EF958C;
+            --c-slate: #937C8A;
+            --c-bg: #f8fafc;
+            --c-white: #ffffff;
+            --c-gray: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--c-bg);
+            color: var(--c-dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden; 
+        }
+
+        .dashboard-card {
+            background: var(--c-white);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(48, 42, 64, 0.08);
+            padding: 40px;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--c-blue), var(--c-red));
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: var(--c-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--c-slate);
+            font-size: 1rem;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .stats-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 180px;
+            width: 180px;
+        }
+
+        .total-score-block {
+            text-align: left;
+        }
+
+        .score-huge {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--c-blue);
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--c-slate);
+            margin-top: 5px;
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid var(--c-gray);
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-color: var(--c-light-blue);
+        }
+
+        .activity-item::after {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 6px;
+            background-color: var(--c-gray);
+        }
+
+        /* Status highlights for list items */
+        .activity-item.done::after { background-color: #16a34a; } /* Green for passed */
+        .activity-item.failed { 
+            border-color: #fca5a5; 
+            background-color: #fef2f2; 
+        }
+        .activity-item.failed::after { background-color: var(--c-red); }
+
+        .activity-info { text-align: left; flex-grow: 1; }
+
+        .activity-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--c-dark);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .activity-score {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--c-slate);
+        }
+
+        .status-tag {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tag-pending { background: #f1f5f9; color: #94a3b8; }
+        .tag-passed { background: #dcfce7; color: #16a34a; }
+        .tag-failed { background: #fee2e2; color: #dc2626; }
+
+        .btn-retry {
+            text-decoration: none;
+            background-color: var(--c-white);
+            color: var(--c-dark);
+            border: 1px solid var(--c-gray);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        .btn-retry:hover {
+            background-color: var(--c-dark);
+            color: white;
+            border-color: var(--c-dark);
+        }
+
+        .btn-retry.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f1f5f9;
+            color: #94a3b8;
+        }
+        
+        /* Highlight retake button for failed activities */
+        .activity-item.failed .btn-retry {
+            background-color: var(--c-red);
+            color: white;
+            border-color: var(--c-red);
+        }
+        .activity-item.failed .btn-retry:hover {
+            background-color: #cc002d;
+        }
+
+        .status-badge {
+            margin-top: 30px;
+            display: inline-flex;
+            align-items: center;
+            background-color: #f0fdf4;
+            color: #16a34a;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            gap: 8px;
+            border: 1px solid #dcfce7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-card" id="mainCard">
+        <h1>Unit Summary</h1>
+        <p class="subtitle" id="mainSubtitle">Complete all activities to finish the module</p>
+        
+        <div class="stats-container">
+            <div class="chart-wrapper">
+                <canvas id="scoreChart"></canvas>
+            </div>
+            
+            <div class="total-score-block">
+                <div class="score-huge" id="finalPercent">0%</div>
+                <div class="score-label" id="rawScoreDisplay">0 / 0 Points</div>
+            </div>
+        </div>
+
+        <ul class="activity-list" id="activityList">
+            <li style="color: #999; padding: 20px;">Loading course data...</li>
+        </ul>
+
+        <div class="status-badge" id="syncStatus" style="display: none;">
+            <span style="color:#16a34a">●</span> Grade Synchronized
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION: Default passing rate if the activity doesn't provide one.
+        // 0.8 means 80% of max score is required to pass.
+        const DEFAULT_PASS_RATE = 0.8;
+
+        let currentChart = null;
+
+        function formatTitle(id) {
+            if (!id) return "Unknown Activity";
+            return id.replace(/[_-]/g, ' ')
+                     .replace(/\b\w/g, l => l.toUpperCase());
+        }
+
+        function notifyResize() {
+            const height = document.body.scrollHeight;
+            if (window.parent) {
+                window.parent.postMessage({ type: 'resize', height: height + 40 }, '*');
+            }
+        }
+        const resizeObserver = new ResizeObserver(() => notifyResize());
+        resizeObserver.observe(document.body);
+        window.addEventListener('load', notifyResize);
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                window.parent.postMessage({ type: 'REQUEST_SUMMARY' }, '*');
+                window.parent.postMessage({ type: 'FORCE_SUBMIT_MOODLE' }, '*');
+                document.getElementById('syncStatus').style.display = 'inline-flex';
+            }, 500);
+        });
+
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'SUMMARY_DATA') {
+                renderDashboard(event.data.payload);
+            }
+        });
+
+        // Function to request parent scroll
+        window.navigateTo = function(anchorId) {
+            if (anchorId) {
+                window.parent.postMessage({
+                    type: 'SCROLL_TO_ANCHOR',
+                    payload: anchorId
+                }, '*');
+            }
+        };
+
+        function renderDashboard(state) {
+            const activities = state.activities || {};
+            const listEl = document.getElementById('activityList');
+            const subtitleEl = document.getElementById('mainSubtitle');
+            
+            listEl.innerHTML = ''; 
+
+            const actsArray = Object.values(activities);
+            
+            //  (pageOrder)
+            actsArray.sort((a, b) => {
+                const orderA = (a.pageOrder !== undefined) ? a.pageOrder : 9999;
+                const orderB = (b.pageOrder !== undefined) ? b.pageOrder : 9999;
+                return orderA - orderB;
+            });
+
+            const totalCount = actsArray.length;
+            
+            if (totalCount === 0) {
+                 listEl.innerHTML = '<li style="padding:20px; color:#999;">No activities registered yet.</li>';
+                 subtitleEl.innerHTML = "No activities found.";
+                 return;
+            }
+
+            let completedCount = 0;
+            let failedCount = 0;
+
+            // Render individual activities and calculate pass/fail status
+            actsArray.forEach(act => {
+                const currentScore = parseFloat(act.score) || 0;
+                const currentMax = parseFloat(act.max) || 0;
+                
+                let isDone = act.isComplete;
+                let isPassed = false;
+                let isFailed = false;
+
+                // Determine passing score: use default fallback (e.g. 80%) first
+                let requiredScore = currentMax * DEFAULT_PASS_RATE;
+                
+                // If explicitly provided by the iframe, override the default
+                if (act.passScore !== undefined && act.passScore !== null && !isNaN(parseFloat(act.passScore))) {
+                    requiredScore = parseFloat(act.passScore);
+                }
+
+                if (isDone) {
+                    completedCount++;
+                    // Check if score meets the dynamic threshold
+                    if (currentMax > 0 && currentScore < requiredScore) {
+                        isFailed = true;
+                        failedCount++;
+                    } else {
+                        isPassed = true;
+                    }
+                }
+                
+                const displayTitle = act.title ? act.title : formatTitle(act.id);
+                const isDisabled = !act.anchorId;
+                const btnClass = `btn-retry ${isDisabled ? 'disabled' : ''}`;
+                
+                let btnLabel = 'Start →';
+                let itemClass = 'pending';
+                let statusBadge = `<span class="status-tag tag-pending">Not Started</span>`;
+
+                if (isPassed) {
+                    itemClass = 'done';
+                    statusBadge = `<span class="status-tag tag-passed">Passed</span>`;
+                    btnLabel = 'Retake ↻';
+                } else if (isFailed) {
+                    itemClass = 'failed';
+                    statusBadge = `<span class="status-tag tag-failed">Failed</span>`;
+                    btnLabel = 'Retake ↻';
+                }
+
+                // ALWAYS show user the required score so it's transparent
+                // Math.ceil is used for display so e.g. 11.2 -> 12
+                let displayReq = Math.ceil(requiredScore);
+                let passReqStr = '';
+                if (currentMax > 0) {
+                    passReqStr = ` <span style="font-size:0.85em; opacity:0.8; margin-left:5px;">(Required: ${displayReq})</span>`;
+                }
+
+                const btnAction = isDisabled ? '' : `window.navigateTo('${act.anchorId}')`;
+                const li = document.createElement('li');
+                li.className = `activity-item ${itemClass}`;
+                
+                li.innerHTML = `
+                    <div class="activity-info">
+                        <span class="activity-title">${displayTitle}</span>
+                        <span class="activity-score">
+                            ${isDone ? `Score: ${currentScore} / ${currentMax}` : `Max Points: ${currentMax}`} ${passReqStr}
+                        </span>
+                        ${statusBadge}
+                    </div>
+                    <button class="${btnClass}" onclick="${btnAction}">
+                        ${btnLabel}
+                    </button>
+                `;
+                listEl.appendChild(li);
+            });
+
+            // Update Header Subtitle based on overall progress
+            subtitleEl.style.color = "var(--c-slate)";
+            subtitleEl.style.fontWeight = "normal";
+
+            if (failedCount > 0) {
+             
+                subtitleEl.innerHTML = "⚠️ Module not passed due to low scores. Please retake the highlighted activities.";
+                subtitleEl.style.color = "var(--c-red)";
+                subtitleEl.style.fontWeight = "600";
+            } else if (completedCount < totalCount) {
+              
+                subtitleEl.innerHTML = "Complete all activities to finish the module.";
+            } else {
+             
+                subtitleEl.innerHTML = "🎉 Congratulations! You have successfully passed all activities.";
+                subtitleEl.style.color = "#16a34a"; // Green
+                subtitleEl.style.fontWeight = "600";
+            }
+
+            // Draw Charts
+            const totalScore = parseFloat(state.totalScore) || 0;
+            const totalMax = parseFloat(state.totalMaxScore) || 0;
+            
+            const percent = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : 0;
+            
+            document.getElementById('finalPercent').textContent = percent + '%';
+            document.getElementById('rawScoreDisplay').textContent = `${totalScore} / ${totalMax} Points`;
+
+            drawChart(totalScore, totalMax - totalScore);
+            setTimeout(notifyResize, 100);
+        }
+
+        function drawChart(score, remaining) {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            if (score <= 0 && remaining <= 0) remaining = 1;
+            if (score < 0) score = 0;
+            if (remaining < 0) remaining = 0;
+
+            currentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Earned', 'Remaining'],
+                    datasets: [{
+                        data: [score, remaining],
+                        backgroundColor: ['#00A6EB', '#e2e8f0'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

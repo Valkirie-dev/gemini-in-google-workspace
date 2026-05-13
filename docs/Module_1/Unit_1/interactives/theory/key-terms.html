@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIX AI: Key Terminology</title>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Import Corporate Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        /* --- CRITICAL STYLES FOR IFRAME INTEGRATION --- */
+        html, body { 
+            height: auto !important; 
+            min-height: 0 !important;
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; /* No internal scrollbars */
+            background-color: #f8fafc; 
+            font-family: 'Manrope', sans-serif; /* Corporate Font */
+        }
+        
+        #root {
+            /* 'flow-root' creates a new block formatting context.
+               It ensures all child margins/floats are contained within the wrapper's height. */
+            display: flow-root; 
+            width: 100%;
+            padding-bottom: 5px; /* Buffer to prevent cutting off bottom shadows */
+        }
+
+        /* 3D Flip Utilities */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- COLORS ---
+        const COLORS = {
+            cyan: '#00A6EB', // Primary Corporate Blue
+            red: '#E60036',
+            darkPurple: '#302A40',
+            lightCyan: '#81D0F4',
+            lightRed: '#EF958C',
+            slate: '#1e293b'
+        };
+
+        // --- ICONS ---
+        const Icon = ({ name, size = 32, className }) => {
+            switch(name) {
+                case 'RAG': return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>;
+                case 'Chunking': return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>;
+                case 'Context': return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>;
+                case 'Vector': return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>;
+                case 'Shield': return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>;
+                case 'Rotate': return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
+                default: return null;
+            }
+        };
+
+        // --- DATA ---
+        // All accents set to COLORS.cyan to enforce a uniform blue theme.
+        const CARDS = [
+            { id: 1, term: "RAG", sub: "(Retrieval-Augmented Generation)", icon: "RAG", accent: COLORS.cyan, def: "An architectural approach that grounds the AI by incorporating verified internal knowledge directly into the generation process, ensuring accuracy and traceability." },
+            { id: 2, term: "Chunking", sub: "Data Segmentation", icon: "Chunking", accent: COLORS.cyan, def: "The process of dividing large documents (like complex API specs or technical manuals) into small, manageable segments for the AI to process efficiently." },
+            { id: 3, term: "1 Million Tokens", sub: "Context Window", icon: "Context", accent: COLORS.cyan, def: "Token - meaning unit. Think of it as the 'active RAM' of the AI. It allows you to analyze hundreds of technical documents or hours of recordings simultaneously without losing context." },
+            { id: 4, term: "Embeddings & Vector Databases", sub: "Semantic Storage", icon: "Vector", accent: COLORS.cyan, def: "Your data is 'chunked' and converted into numeric representations (embeddings) that capture meaning. These are stored in a vector database for high-speed concept matching." },
+            { id: 5, term: "Source-Grounded", sub: "Architecture", icon: "Shield", accent: COLORS.cyan, def: "A technical constraint that restricts the AI’s reasoning strictly to your provided data, serving as an ironclad barrier against hallucinations." }
+        ];
+
+        // --- COMPONENT: CARD ---
+        const FlashCard = ({ data }) => {
+            const [isFlipped, setIsFlipped] = useState(false);
+            return (
+                <div className="group perspective-1000 w-full h-80 cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
+                    <div className={`relative w-full h-full duration-700 transform-style-3d transition-transform ${isFlipped ? 'rotate-y-180' : ''}`}>
+                        {/* FRONT */}
+                        <div className="absolute w-full h-full backface-hidden rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-lg border border-slate-200 bg-white hover:border-opacity-100 hover:shadow-xl transition-all" style={{ borderColor: isFlipped ? 'transparent' : data.accent }}>
+                            <div className="mb-6 p-4 rounded-full bg-slate-50 shadow-sm border border-slate-100" style={{ color: data.accent }}>
+                                <Icon name={data.icon} size={48} />
+                            </div>
+                            <h3 className="text-2xl font-bold mb-2 text-slate-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{data.term}</h3>
+                            <p className="text-sm font-medium opacity-80 uppercase tracking-widest" style={{ color: data.accent }}>{data.sub}</p>
+                            <div className="absolute bottom-6 text-xs text-slate-400 flex items-center gap-1 animate-pulse">Click to Flip <Icon name="Rotate" size={12} /></div>
+                        </div>
+                        {/* BACK */}
+                        <div className="absolute w-full h-full backface-hidden rotate-y-180 rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-lg border border-slate-100 bg-slate-50 text-slate-800">
+                            <div className="w-12 h-1 rounded-full mb-6" style={{ backgroundColor: data.accent }}></div>
+                            <p className="text-lg leading-relaxed font-medium text-slate-700" style={{ fontFamily: 'Manrope, sans-serif' }}>{data.def}</p>
+                            <div className="absolute bottom-6 text-xs text-slate-400 font-bold uppercase tracking-wider">{data.term}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- APP ---
+        const App = () => {
+            
+            // --- AUTO-RESIZE LOGIC (Dynamic Version) ---
+            useEffect(() => {
+                const sendHeight = () => {
+                    const height = document.documentElement.scrollHeight;
+                    // Send message to parent window if content is loaded (> 100px)
+                    if (height > 100) {
+                        try {
+                            window.parent.postMessage({ type: 'resize', height: height }, '*');
+                        } catch(e) {}
+                    }
+                };
+
+                // 1. Setup ResizeObserver to detect DOM changes (Continuous monitoring)
+                const observer = new ResizeObserver(sendHeight);
+                observer.observe(document.body);
+
+                // 2. Extra triggers to ensure fonts/icons are accounted for
+                setTimeout(sendHeight, 250);
+                setTimeout(sendHeight, 500);
+                
+                // Cleanup on unmount
+                return () => observer.disconnect();
+            }, []);
+            // ----------------------------------------------
+
+            return (
+                <div className="flex items-center justify-center py-12">
+                    <main className="max-w-6xl mx-auto px-6 w-full">
+                        <div className="flex flex-wrap justify-center gap-8">
+                            {CARDS.map(card => (
+                                <div key={card.id} className="w-full sm:w-[340px]">
+                                    <FlashCard data={card} />
+                                </div>
+                            ))}
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

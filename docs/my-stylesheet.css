@@ -1,0 +1,577 @@
+/* ==========================================================================
+   1. Fonts & CSS Variables
+   ========================================================================== */
+   @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+   :root {
+       /* --- Corporate Palette --- */
+       --primary: #00a6eb;          /* Main Blue */
+       --accent: #e60036;           /* Main Red/Raspberry */
+       
+       --text-main: #302a40;        /* Deep Purple/Black (Body text) */
+       --text-muted: #5f6c7b;       /* Grey (Captions) */
+       
+       --header-dark: #2a668e;      /* Dark Blue (All Headers, Bold Text) */
+       
+       /* --- Backgrounds & Highlights --- */
+       --bg-highlight: rgba(230, 0, 54, 0.15); /* Highlighter effect color */
+       --bg-page: #f0f2f5;          /* Outer page background */
+       --bg-card: #ffffff;          /* Content card background */
+       --bg-ide: #282c34;           /* Dark IDE background for code blocks */
+       
+       /* --- UI Dimensions & Effects --- */
+       --radius-lg: 16px;
+       --radius-sm: 6px;
+       --shadow-soft: 0 12px 40px -15px rgba(0, 0, 0, 0.08);
+       --shadow-hover: 0 15px 50px -10px rgba(0, 166, 235, 0.15);
+   }
+   
+   /* Corporate text selection color */
+   ::selection {
+       background: var(--primary);
+       color: white;
+   }
+   
+   html {
+       scroll-behavior: smooth;
+   }
+   
+   /* ==========================================================================
+      2. Custom Scrollbar (Dynamic)
+      ========================================================================== */
+   ::-webkit-scrollbar {
+       width: 10px;
+       height: 10px;
+   }
+   
+   ::-webkit-scrollbar-track {
+       background: #f1f1f1; 
+   }
+   
+   ::-webkit-scrollbar-thumb {
+       background: #d1d5db; 
+       border-radius: 5px;
+       border: 2px solid #f1f1f1;
+       transition: background 0.3s;
+   }
+   
+   ::-webkit-scrollbar-thumb:hover {
+       background: var(--primary);
+   }
+   
+   /* ==========================================================================
+      3. Main Layout & Animation
+      ========================================================================== */
+   body {
+       font-family: 'Manrope', sans-serif;
+       background-color: var(--bg-page);
+       color: var(--text-main);
+       line-height: 1.7;
+       margin: 0;
+       padding: 40px 20px;
+   }
+   
+   /* Fade In Animation Keyframes */
+   @keyframes fadeInUp {
+       from { opacity: 0; transform: translateY(30px); }
+       to { opacity: 1; transform: translateY(0); }
+   }
+   
+   /* The Main Content Card */
+   #content {
+       max-width: 1200px;
+       margin: 0 auto;
+       background: var(--bg-card);
+       padding: 0 40px;
+       border-radius: var(--radius-lg);
+       box-shadow: var(--shadow-soft);
+       position: relative;
+       overflow: hidden;
+       animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+   }
+   
+   /* Top Decorative Strip */
+   #content::before {
+       content: "";
+       position: absolute;
+       top: 0; left: 0; right: 0;
+       height: 6px;
+       background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+   }
+   
+   /* Mobile Responsiveness */
+   @media (max-width: 768px) {
+       #content { padding: 30px 20px; }
+       h1 { font-size: 2.2rem; }
+       .listingblock .title { padding-left: 20px; }
+       .listingblock .title::before { display: none; }
+   }
+   
+   /* Remove zoom effects from header and footer images */
+   #header img, #footer img {
+       transform: none !important;
+       transition: none !important;
+   }
+   
+   /* Stylish Horizontal Rules (HR) */
+   hr {
+       border: 0;
+       height: 1px;
+       background: linear-gradient(90deg, rgba(0,166,235,0) 0%, var(--primary) 50%, rgba(0,166,235,0) 100%);
+       margin: 3.5em 0;
+       opacity: 0.5; /* Keeps it subtle */
+   }
+   
+   /* ==========================================================================
+      4. Typography
+      ========================================================================== */
+   h1, h2, h3, h4 {
+       font-weight: 800;
+       line-height: 1.2;
+       margin-top: 1.8em;
+       margin-bottom: 0em;
+       color: var(--header-dark); /* Set base color for all headers to Dark Blue */
+   }
+   
+   /* H1: Clean, Solid Corporate Blue */
+   h1 {
+       font-size: 3rem;
+       margin-top: 0;
+       margin-bottom: 0em;
+       color: var(--primary); /* Override to Bright Blue for H1 */
+       display: inline-block;
+       position: relative;
+       letter-spacing: -0.03em;
+   }
+   
+   /* H1 Underline Accent */
+   h1::after {
+       content: '';
+       display: block;
+       width: 60px;
+       height: 5px;
+       background: var(--accent);
+       margin-top: 20px;
+       border-radius: 4px;
+   }
+   
+   /* H2: Structured with left border (Static, Dark Blue) */
+   h2 {
+       font-size: 2rem;
+       padding-left: 20px;
+       border-left: 5px solid var(--primary);
+   }
+   
+   /* H3: Professional & Restrained (Dark Blue) */
+   h3 {
+       font-size: 1.4rem;
+       font-weight: 700;
+       display: flex;
+       align-items: center;
+   }
+   
+   /* H3 Dot Accent */
+   h3::before {
+       content: '';
+       display: inline-block;
+       width: 8px;
+       height: 8px;
+       background-color: var(--accent);
+       border-radius: 50%;
+       margin-right: 12px;
+   }
+   
+   p { margin-bottom: 1.5em; font-size: 1.05rem; }
+   
+   /* Links with animated underline */
+   a {
+       color: var(--primary);
+       text-decoration: none;
+       font-weight: 600;
+       position: relative;
+       transition: color 0.2s ease;
+   }
+   
+   a::after {
+       content: '';
+       position: absolute;
+       width: 100%;
+       height: 2px;
+       bottom: -2px;
+       left: 0;
+       background-color: var(--primary);
+       transform: scaleX(0);
+       transform-origin: bottom right;
+       transition: transform 0.3s ease-out;
+   }
+   
+   a:hover { color: #2a668e; }
+   a:hover::after { transform: scaleX(1); transform-origin: bottom left; }
+   
+   /* "Highlighter" Italics Effect */
+   em {
+       font-style: italic;
+       font-weight: 500;
+       color: #951b3c; 
+       background: linear-gradient(180deg, transparent 65%, var(--bg-highlight) 65%);
+       padding: 0 4px;
+       border-radius: 2px;
+       text-decoration: none;
+   }
+   
+   /* Branded Strong Tags */
+   strong { 
+       color: var(--header-dark); 
+       font-weight: 800; 
+   }
+   
+   /* ==========================================================================
+      5. Lists Styling (STATIC)
+      ========================================================================== */
+   ul { list-style: none; padding-left: 1.5em; margin-bottom: 1.5em; }
+   
+   /* Static List Items - Removed Hover Animations */
+   ul li { 
+       position: relative; 
+       padding-left: 1.5em; 
+       margin-bottom: 0.8em; 
+   }
+   
+   /* Custom Red Chevron Bullet */
+   ul li::before {
+       content: "›"; 
+       position: absolute;
+       left: 0;
+       top: -2px;
+       color: var(--accent);
+       font-weight: 800;
+       font-size: 1.2em;
+   }
+   
+   ol { counter-reset: step-counter; list-style: none; padding-left: 0; margin-bottom: 1.5em; }
+   ol li { position: relative; padding-left: 3.5em; margin-bottom: 1em; counter-increment: step-counter; }
+   
+   /* Custom Blue Circle Numbers */
+   ol li::before {
+       content: counter(step-counter);
+       position: absolute;
+       left: 0;
+       top: 0;
+       width: 28px;
+       height: 28px;
+       background-color: var(--primary);
+       color: white;
+       font-weight: 700;
+       font-size: 0.9em;
+       text-align: center;
+       line-height: 28px;
+       border-radius: 50%;
+       box-shadow: 0 4px 10px rgba(0, 166, 235, 0.3);
+   }
+   
+   ul.checklist li::before { content: none; }
+   ul.checklist li { padding-left: 0.5em; }
+   
+   /* ==========================================================================
+      6. Code Blocks (With Auto-Wrap)
+      ========================================================================== */
+   .listingblock {
+       margin: 2.5em 0;
+       background: var(--bg-ide);
+       border-radius: 8px;
+       box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+       overflow: hidden;
+       border: 1px solid #1e222a;
+       position: relative;
+       transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+   }
+   
+   .listingblock:hover { transform: translateY(-4px); }
+   
+   .listingblock .title {
+       background: #21252b;
+       color: #abb2bf;
+       padding: 10px 15px 10px 80px;
+       font-family: 'Manrope', sans-serif;
+       font-size: 0.85rem;
+       font-weight: 500;
+       border-bottom: 1px solid #181a1f;
+       display: block;
+       line-height: 1.5;
+   }
+   
+   .listingblock .title::before {
+       content: '';
+       position: absolute;
+       left: 20px;
+       top: 50%;
+       transform: translateY(-50%);
+       width: 12px;
+       height: 12px;
+       border-radius: 50%;
+       background-color: #ff5f56;
+       box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
+       opacity: 0.8;
+   }
+   
+   .listingblock pre {
+       margin: 0;
+       padding: 20px 25px;
+       background: transparent !important;
+       font-family: 'JetBrains Mono', Consolas, monospace;
+       font-size: 0.95rem;
+       line-height: 1.6;
+       color: #abb2bf !important;
+       border: none !important;
+       
+       /* Code wrapping settings */
+       white-space: pre-wrap;       /* Wrap long lines of code */
+       word-wrap: break-word;       /* Break very long words if necessary */
+       overflow-x: hidden;          /* Hide horizontal scrollbar */
+   }
+   
+   .listingblock pre code {
+       background: transparent !important;
+       color: inherit !important;
+       border: none !important;
+       padding: 0;
+       box-shadow: none !important;
+       font-family: inherit;
+       white-space: pre-wrap; /* Ensure inline code inside blocks also wraps */
+   }
+   
+   /* ==========================================================================
+      7. Inline Code
+      ========================================================================== */
+   code {
+       font-family: 'JetBrains Mono', monospace;
+       font-size: 0.9em;
+       color: var(--primary);
+       background: rgba(0, 166, 235, 0.08);
+       padding: 2px 6px;
+       border-radius: 4px;
+       border: none;
+       vertical-align: middle;
+   }
+   
+   /* ==========================================================================
+      8. Tables (CLEAN WHITE HEADERS)
+      ========================================================================== */
+   table.tableblock {
+       width: 100%;
+       border-collapse: collapse;
+       margin: 2em 0;
+       border-radius: var(--radius-sm);
+       overflow: hidden;
+       box-shadow: 0 0 0 1px #e1e4e8;
+       font-size: 0.9rem; /* Smaller font size for density */
+       background-color: #fff;
+   }
+   
+   table.tableblock thead th {
+       background-color: #ffffff; /* Clean white background */
+       color: var(--header-dark); /* Dark blue text for contrast */
+       padding: 10px 12px; 
+       text-align: left;
+       font-weight: 700;
+       line-height: 1.2; 
+       border-bottom: 2px solid var(--primary); /* Corporate blue underline */
+   }
+   
+   table.tableblock td {
+       padding: 8px 12px; 
+       border-bottom: 1px solid #eee;
+       transition: background 0.1s;
+       line-height: 1.3; 
+       color: var(--text-main);
+       vertical-align: middle;
+   }
+   
+   /* REMOVE hidden paragraph margins inside tables (Asciidoctor quirk) */
+   table.tableblock td p {
+       margin: 0 !important;
+       line-height: 1.3;
+   }
+   
+   table.tableblock tr:hover td { background-color: #f0f7fc; }
+   table.tableblock tbody tr:nth-child(even) { background-color: #fcfcfc; }
+   
+   /* CENTERING FIX FOR FOOTER TABLES (Based on specific class) */
+   table.tableblock.text-center {
+       margin-left: auto;
+       margin-right: auto;
+   }
+   
+   table.tableblock.text-center td,
+   table.tableblock.text-center th,
+   table.tableblock.text-center td p {
+       text-align: center !important;
+   }
+   
+   /* ==========================================================================
+      9. Collapsible Details (CARD STYLE)
+      ========================================================================== */
+   details {
+       margin: 2em 0;
+       padding: 1em 1.5em;
+       background: #ffffff;
+       border: 1px solid #e1e4e8;
+       border-left: 5px solid var(--primary); 
+       border-radius: 8px;
+       overflow: hidden;
+       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+       box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+   }
+   
+   details:hover {
+       box-shadow: 0 8px 15px rgba(0, 166, 235, 0.1);
+       transform: translateY(-2px);
+   }
+   
+   details[open] {
+       border-color: var(--primary); 
+       box-shadow: 0 10px 25px rgba(0, 166, 235, 0.15);
+   }
+   
+   summary {
+       background-color: #f8f9fa;
+       padding: 15px 20px 15px 50px; 
+       cursor: pointer;
+       font-weight: 700;
+       color: var(--text-main);
+       list-style: none;
+       position: relative;
+       transition: background 0.2s;
+       user-select: none;
+       border-bottom: 1px solid transparent;
+   }
+   
+   summary::-webkit-details-marker { display: none; }
+   summary:hover { background-color: #f0f7fc; color: var(--primary); }
+   
+   summary::before {
+       content: '›'; 
+       position: absolute;
+       left: 20px;
+       top: 50%;
+       transform: translateY(-50%);
+       font-family: 'Manrope', sans-serif;
+       font-size: 1.6em;
+       font-weight: 800;
+       color: var(--primary);
+       line-height: 1;
+       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   
+   details[open] summary::before { transform: translateY(-50%) rotate(90deg); }
+   details[open] summary { border-bottom: 1px solid #eee; }
+   
+   details[open] summary ~ * { animation: slideDown 0.4s ease-out forwards; }
+   @keyframes slideDown {
+       from { opacity: 0; transform: translateY(-10px); }
+       to { opacity: 1; transform: translateY(0); }
+   }
+   
+   details .content, details > *:not(summary) {
+       padding: 25px 30px; 
+       margin: 0;
+   }
+   
+   /* ==========================================================================
+      10. Admonitions & Images
+      ========================================================================== */
+   .admonitionblock {
+       margin: 2em 0;
+       background: #fff;
+       border-left: 6px solid var(--text-muted);
+       border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+       box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+       transition: transform 0.2s;
+   }
+   
+   .admonitionblock td.icon {
+       width: 50px;
+       text-align: center;
+       font-size: 1.5rem;
+       color: var(--primary);
+       padding: 15px;
+       background: rgba(0,0,0,0.02);
+       user-select: none;
+   }
+   
+   .admonitionblock td.content { padding: 15px 20px; font-size: 0.95rem; }
+   
+   .admonitionblock.note { border-color: var(--primary); }
+   .admonitionblock.tip { border-color: var(--header-dark); }
+   .admonitionblock.important { border-color: var(--accent); }
+   .admonitionblock.important td.icon { color: var(--accent); }
+   
+   /* IMAGES - ANIMATIONS REMOVED */
+   .imageblock { text-align: center; margin: 2em 0; }
+   .imageblock img {
+       max-width: 100%;
+       border-radius: var(--radius-lg);
+       box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+   }
+   
+   .imageblock .title {
+       margin-top: 15px;
+       color: var(--text-muted);
+       font-style: italic;
+       font-size: 0.9rem;
+   }
+   
+   /* ==========================================================================
+      11. Table of Contents (Sticky)
+      ========================================================================== */
+   #toc {
+       background: #fcfcfc;
+       border: 1px solid #eee;
+       border-radius: var(--radius-lg);
+       padding: 20px;
+       margin-bottom: 40px;
+       position: sticky;
+       top: 20px;
+       z-index: 10;
+       box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+   }
+   
+   #toc #toctitle {
+       color: var(--text-main);
+       font-size: 1.1rem;
+       font-weight: 700;
+       margin-bottom: 15px;
+       border-bottom: 2px solid var(--primary);
+       display: inline-block;
+       padding-bottom: 5px;
+   }
+   
+   #toc ul { padding-left: 0; margin-bottom: 0; }
+   #toc ul li { padding-left: 0; margin-bottom: 0.5em; }
+   #toc ul li::before { content: none; }
+   
+   /* ==========================================================================
+      12. Special Layout Enhancements
+      ========================================================================== */
+   
+   /* Enhanced External Links (Specifically for "Further reading") */
+   /* Makes links feel more like modern interactive buttons/tags */
+   .sect2 .paragraph a {
+       display: inline-block;
+       padding: 2px 6px;
+       background-color: rgba(0, 166, 235, 0.05);
+       border-radius: 4px;
+       transition: all 0.2s ease;
+   }
+   
+   .sect2 .paragraph a:hover {
+       background-color: var(--primary);
+       color: white;
+       transform: translateY(-2px); /* Slight lift effect */
+       box-shadow: 0 4px 10px rgba(0, 166, 235, 0.2);
+   }
+   
+   .sect2 .paragraph a:hover::after {
+       display: none; /* Hide the default underline effect on these specific links */
+   }
+
