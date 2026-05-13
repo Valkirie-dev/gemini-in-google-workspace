@@ -1,0 +1,81 @@
+name: Build and Deploy AsciiDoc
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: asciidoctor/docker-asciidoctor
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build AsciiDoc to HTML
+        run: |
+          mkdir -p out
+
+          asciidoctor \
+            -a toc! \
+            -a nofooter \
+            -a data-uri \
+            -a stem=latexmath \
+            -a stylesdir=$GITHUB_WORKSPACE/docs \
+            -a stylesheet=my-stylesheet.css \
+            -a copycss=$GITHUB_WORKSPACE/docs/my-stylesheet.css \
+            -R docs \
+            -D out \
+            '**/*.adoc'
+
+      - name: Copy supporting files
+        run: |
+          cd docs
+          find . \
+            \( \
+              -name '*.ipynb' -o \
+              -name '*.py' -o \
+              -name '*.yaml' -o \
+              -name '*.yml' -o \
+              -name '*.conf' -o \
+              -name '*.zip' -o \
+              -name '*.pdf' -o \
+              -name '*.csv' -o \
+              -name '*.txt' -o \
+              -name '*.html' -o \
+              -name '*.css' -o \
+              -name '*.js' -o \
+              -name '*.mp4' -o \
+              -name '*.gif' -o \
+              -name '*.png' -o \
+              -name '*.jpg' -o \
+              -name '*.jpeg' -o \
+              -name '*.svg' \
+            \) | cpio -pdm ../out
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
