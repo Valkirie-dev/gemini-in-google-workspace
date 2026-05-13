@@ -106,7 +106,7 @@ https://blog.google/innovation-and-ai/models-and-research/google-labs/notebooklm
 
 == Summary
 ++++
-<iframe src="/util/scripts/summary.html" style="width: 100%; border: none; overflow: hidden; min-height: 150px;" scrolling="no"></iframe>
+<iframe src="../../util/scripts/summary.html" style="width: 100%; border: none; overflow: hidden; min-height: 150px;" scrolling="no"></iframe>
 ++++
 
 ====
