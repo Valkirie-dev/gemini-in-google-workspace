@@ -1,6 +1,6 @@
 ++++
-<script src='/util/scripts/dynamicResizeScript.js'></script>
-<script src='/util/scripts/tracker.js'></script>
+<script src='../../util/scripts/dynamicResizeScript.js'></script>
+<script src='../../util/scripts/tracker.js'></script>
 ++++
 
 image::../../images/header.jpg[Hat, width=100%]
@@ -115,6 +115,6 @@ image::../../images/footer.png[Under, width=100%]
 
 
 ++++
-<script src='/util/scripts/slides.js'></script>
-<script src='/util/scripts/moodle-resizer.js'></script>
+<script src='../../util/scripts/slides.js'></script>
+<script src='../../util/scripts/moodle-resizer.js'></script>
 ++++
