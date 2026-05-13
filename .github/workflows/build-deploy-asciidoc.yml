@@ -19,59 +19,40 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
 
       - name: Install Asciidoctor
+        run: gem install asciidoctor
+
+      - name: Prepare Output Directory
+        run: mkdir -p out
+
+      - name: Copy supporting files
+        # Копируем всё из docs в out, исключая исходники .adoc
         run: |
-          sudo apt-get update
-          sudo apt-get install -y asciidoctor
+          rsync -av --exclude='*.adoc' docs/ out/
 
       - name: Build AsciiDoc to HTML
         run: |
-          mkdir -p out
-
-          asciidoctor \
+          # Ищем все .adoc файлы и компилируем их с сохранением структуры
+          find docs -name "*.adoc" -exec asciidoctor \
             -a toc! \
             -a nofooter \
             -a data-uri \
             -a stem=latexmath \
             -a stylesdir=$GITHUB_WORKSPACE/docs \
             -a stylesheet=my-stylesheet.css \
-            -a copycss=$GITHUB_WORKSPACE/docs/my-stylesheet.css \
             -R docs \
             -D out \
-            "**/*.adoc"
-
-      - name: Copy supporting files
-        run: |
-          cd docs
-          find . \
-            \( \
-              -name '*.ipynb' -o \
-              -name '*.py' -o \
-              -name '*.yaml' -o \
-              -name '*.yml' -o \
-              -name '*.conf' -o \
-              -name '*.zip' -o \
-              -name '*.pdf' -o \
-              -name '*.csv' -o \
-              -name '*.txt' -o \
-              -name '*.html' -o \
-              -name '*.css' -o \
-              -name '*.js' -o \
-              -name '*.mp4' -o \
-              -name '*.gif' -o \
-              -name '*.png' -o \
-              -name '*.jpg' -o \
-              -name '*.jpeg' -o \
-              -name '*.svg' \
-            \) -print | cpio -pdm ../out
+            {} +
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -81,10 +62,10 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
-
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
