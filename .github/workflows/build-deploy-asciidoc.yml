@@ -15,12 +15,15 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: asciidoctor/docker-asciidoctor
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install Asciidoctor
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y asciidoctor
 
       - name: Build AsciiDoc to HTML
         run: |
@@ -61,7 +64,7 @@ jobs:
               -name '*.jpg' -o \
               -name '*.jpeg' -o \
               -name '*.svg' \
-            \) | cpio -pdm ../out
+            \) -print | cpio -pdm ../out
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -71,6 +74,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
