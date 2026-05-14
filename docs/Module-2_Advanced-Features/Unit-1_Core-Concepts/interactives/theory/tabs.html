@@ -1,234 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Workflow Tabs</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <script>
-        tailwind.config = {
-            theme: { extend: {
-                colors: {
-                    primary: '#00A6EB', accent: '#E60036', dark: '#302A40',
-                    muted: '#5f6c7b', lightblue: '#81D0F4', darkblue: '#2A668E',
-                    slate: '#937C8A'
-                },
-                fontFamily: { sans: ['Manrope', 'sans-serif'] }
-            }}
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Manrope', sans-serif;
-            background-color: transparent;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        #root {
-            width: 100%;
-            display: flow-root;
-        }
-        /* Fade animation */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        .tab-button {
-            padding: 8px 16px;
-            cursor: pointer;
-            font-weight: 600;
-            background: none;
-            border: none;
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Manrope', system-ui, sans-serif; background: transparent; margin: 0; padding: 16px; overflow: hidden; }
+        .tab-bar { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; overflow-x: auto; gap: 0; }
+        .tab-btn {
+            padding: 10px 18px;
+            font-family: 'Manrope', system-ui, sans-serif;
+            font-size: 13px; font-weight: 600; color: #64748b;
+            background: none; border: none;
             border-bottom: 3px solid transparent;
-            font-family: 'Manrope', sans-serif;
-            font-size: 0.9rem;
-            color: #5f6c7b;
-            transition: color 0.2s ease, border-color 0.2s ease;
+            margin-bottom: -2px; cursor: pointer;
             white-space: nowrap;
+            transition: color 0.2s, border-color 0.2s;
         }
-        .tab-button:hover {
-            color: #00A6EB;
-        }
-        .tab-active {
-            color: #302A40;
-            font-weight: 700;
-        }
+        .tab-btn:hover { color: #302A40; }
+        .tab-btn.active { font-weight: 800; }
+        .panel { display: none; }
+        .panel.visible { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .panel-title { font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 8px; }
+        .panel-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: white; margin-bottom: 16px; }
+        .steps-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        @media (max-width: 500px) { .steps-grid { grid-template-columns: 1fr; } }
+        .step-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .step-title { font-size: 14px; font-weight: 800; margin: 0 0 6px; }
+        .step-desc { font-size: 12.5px; line-height: 1.6; color: #475569; margin: 0; }
     </style>
 </head>
 <body>
-<div id="root"></div>
-
-<script type="text/babel">
-const { useState, useEffect } = React;
-
-/*
-Extracted multi-step process from "Administration and Organizational Alignment" section:
-Steps of setup and deployment for admin and end-users.
-
-TABS = [
-  {
-    id: "setup",
-    title: "Initial Setup",
-    subtitle: "Account Creation & Credential Recovery",
-    colorVar: "var(--primary)",
-    steps: [
-      { title: "Account Creation", desc: "Admins oversee account creation and credential recovery including 'Forgot email?' to ensure consistent and secure access to the workspace." },
-      { title: "Credential Recovery", desc: "Procedure for recovering access if users forget credentials, ensuring minimum disruption." }
-    ]
-  },
-  {
-    id: "deployment",
-    title: "Global Deployment",
-    subtitle: "Localization & Language Support",
-    colorVar: "var(--accent)",
-    steps: [
-      { title: "Localization", desc: "Align AI-driven productivity tools with linguistic and regional needs using supported global languages including Español, Français, 日本語, and Deutsch." },
-      { title: "User Training", desc: "Educate users on best practices including session security and compliance through Help resources." }
-    ]
-  },
-  {
-    id: "security",
-    title: "Security Best Practices",
-    subtitle: "Session Management & Compliance",
-    colorVar: "var(--primary)",
-    steps: [
-      { title: "Session Security", desc: "Enforce use of private browsing or Guest mode to protect company data when accessing accounts on shared or public computers." },
-      { title: "Compliance", desc: "Ensure users review Help, Privacy, and Terms to align with organizational AI policies." }
-    ]
-  }
-];
-*/
-
+<div class="tab-bar" id="tab-bar"></div>
+<div id="panels"></div>
+<script>
 const TABS = [
-    {
-        id: "setup",
-        title: "Initial Setup",
-        subtitle: "Account Creation & Credential Recovery",
-        colorVar: "#00A6EB",
-        steps: [
-            {
-                title: "Account Creation",
-                desc: "Admins oversee account creation and credential recovery including 'Forgot email?' to ensure consistent and secure access to the workspace."
-            },
-            {
-                title: "Credential Recovery",
-                desc: "Procedure for recovering access if users forget credentials, ensuring minimum disruption."
-            }
-        ]
-    },
-    {
-        id: "deployment",
-        title: "Global Deployment",
-        subtitle: "Localization & Language Support",
-        colorVar: "#E60036",
-        steps: [
-            {
-                title: "Localization",
-                desc: "Align AI-driven productivity tools with linguistic and regional needs using supported global languages including Español, Français, 日本語, and Deutsch."
-            },
-            {
-                title: "User Training",
-                desc: "Educate users on best practices including session security and compliance through Help resources."
-            }
-        ]
-    },
-    {
-        id: "security",
-        title: "Security Best Practices",
-        subtitle: "Session Management & Compliance",
-        colorVar: "#00A6EB",
-        steps: [
-            {
-                title: "Session Security",
-                desc: "Enforce use of private browsing or Guest mode to protect company data when accessing accounts on shared or public computers."
-            },
-            {
-                title: "Compliance",
-                desc: "Ensure users review Help, Privacy, and Terms to align with organizational AI policies."
-            }
-        ]
-    }
+    { id:"setup",      title:"Initial Setup",           subtitle:"Account Creation & Credential Recovery", color:"#00A6EB",
+      steps:[{ title:"Account Creation",   desc:"Admins oversee account creation and credential recovery including 'Forgot email?' to ensure consistent and secure access to the workspace." },
+             { title:"Credential Recovery", desc:"Procedure for recovering access if users forget credentials, ensuring minimum disruption to the team." }] },
+    { id:"deployment", title:"Global Deployment",        subtitle:"Localization & Language Support",         color:"#E60036",
+      steps:[{ title:"Localization",   desc:"Align AI-driven productivity tools with linguistic and regional needs using supported global languages including Español, Français, 日本語, and Deutsch." },
+             { title:"User Training",  desc:"Educate users on best practices including session security and compliance through Help resources." }] },
+    { id:"security",   title:"Security Best Practices",  subtitle:"Session Management & Compliance",         color:"#00A6EB",
+      steps:[{ title:"Session Security", desc:"Enforce use of private browsing or Guest mode to protect company data when accessing accounts on shared or public computers." },
+             { title:"Compliance",       desc:"Ensure users review Help, Privacy, and Terms to align with organizational AI policies." }] }
 ];
-
-function TabHeaders({ tabs, activeTabId, onChange }) {
-    return (
-        <div className="flex border-b border-gray-300 dark:border-gray-700 overflow-x-auto">
-            {tabs.map((tab, i) => {
-                const isActive = tab.id === activeTabId;
-                const underlineStyle = isActive ? { borderBottomColor: tab.colorVar, color: '#302A40' } : {};
-                return (
-                    <button
-                        key={tab.id}
-                        onClick={() => onChange(tab.id)}
-                        style={underlineStyle}
-                        className={`tab-button ${isActive ? 'tab-active' : ''}`}
-                        aria-selected={isActive}
-                        role="tab"
-                        tabIndex={isActive ? 0 : -1}
-                    >
-                        {tab.title}
-                    </button>
-                );
-            })}
-        </div>
-    );
+let active = TABS[0].id;
+const tabBar  = document.getElementById('tab-bar');
+const panels  = document.getElementById('panels');
+function render() {
+    tabBar.innerHTML = ''; panels.innerHTML = '';
+    TABS.forEach(tab => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (tab.id === active ? ' active' : '');
+        btn.textContent = tab.title;
+        if (tab.id === active) { btn.style.borderBottomColor = tab.color; btn.style.color = tab.color; }
+        btn.addEventListener('click', () => { active = tab.id; render(); ping(); });
+        tabBar.appendChild(btn);
+        const panel = document.createElement('div');
+        panel.className = 'panel' + (tab.id === active ? ' visible' : '');
+        const stepsHtml = tab.steps.map(s => `
+            <div class="step-card" style="border-top: 3px solid ${tab.color}">
+                <p class="step-title" style="color:${tab.color}">${s.title}</p>
+                <p class="step-desc">${s.desc}</p>
+            </div>`).join('');
+        panel.innerHTML = `
+            <p class="panel-title">${tab.title}</p>
+            <span class="panel-badge" style="background:${tab.color}">${tab.subtitle}</span>
+            <div class="steps-grid">${stepsHtml}</div>`;
+        panels.appendChild(panel);
+    });
 }
-
-function StepCard({ step, colorVar }) {
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 m-2 flex-1 min-w-[240px] max-w-xs ring-1 ring-gray-300 dark:ring-gray-700">
-            <h4 className="font-bold mb-1" style={{ color: colorVar }}>{step.title}</h4>
-            <p className="text-sm" style={{color: '#5f6c7b'}}>{step.desc}</p>
-        </div>
-    );
+function ping() {
+    const h = document.documentElement.scrollHeight;
+    if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
 }
-
-function ContentPanel({ tab }) {
-    return (
-        <section className="p-4 animate-fade-in">
-            <header className="mb-3">
-                <h2 className="text-2xl font-extrabold text-dark mb-1">{tab.title}</h2>
-                <span className="inline-block px-2 py-1 rounded bg-primary text-white text-xs font-semibold" style={{ backgroundColor: tab.colorVar }}>
-                    {tab.subtitle}
-                </span>
-            </header>
-            <div className="flex flex-wrap justify-start">
-                {tab.steps.map((step, idx) => (
-                    <StepCard key={idx} step={step} colorVar={tab.colorVar} />
-                ))}
-            </div>
-        </section>
-    );
-}
-
-function App() {
-    const [activeTabId, setActiveTabId] = React.useState(TABS[0].id);
-
-    React.useEffect(() => {
-        const sendHeight = () => {
-            const h = document.documentElement.scrollHeight;
-            if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
-        };
-        sendHeight();
-        const observer = new ResizeObserver(sendHeight);
-        observer.observe(document.body);
-        return () => observer.disconnect();
-    }, [activeTabId]);
-
-    const activeTab = TABS.find(tab => tab.id === activeTabId);
-
-    return (
-        <main role="tabpanel" aria-labelledby={activeTabId} className="p-4">
-            <TabHeaders tabs={TABS} activeTabId={activeTabId} onChange={setActiveTabId} />
-            <ContentPanel tab={activeTab} />
-        </main>
-    );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+render();
+new ResizeObserver(ping).observe(document.body);
+setTimeout(ping, 150); setTimeout(ping, 500);
 </script>
 </body>
 </html>
