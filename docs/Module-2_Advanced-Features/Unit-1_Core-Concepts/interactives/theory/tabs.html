@@ -9,79 +9,105 @@
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body { font-family: 'Manrope', system-ui, sans-serif; background: transparent; margin: 0; padding: 16px; overflow: hidden; }
-        .tab-bar { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; overflow-x: auto; gap: 0; }
-        .tab-btn {
-            padding: 10px 18px;
-            font-family: 'Manrope', system-ui, sans-serif;
-            font-size: 13px; font-weight: 600; color: #64748b;
-            background: none; border: none;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px; cursor: pointer;
-            white-space: nowrap;
-            transition: color 0.2s, border-color 0.2s;
-        }
-        .tab-btn:hover { color: #302A40; }
-        .tab-btn.active { font-weight: 800; }
-        .panel { display: none; }
-        .panel.visible { display: block; animation: fadeIn 0.25s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        .panel-title { font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 8px; }
-        .panel-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: white; margin-bottom: 16px; }
-        .steps-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        @media (max-width: 500px) { .steps-grid { grid-template-columns: 1fr; } }
-        .step-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .step-title { font-size: 14px; font-weight: 800; margin: 0 0 6px; }
-        .step-desc { font-size: 12.5px; line-height: 1.6; color: #475569; margin: 0; }
+        .widget { background: white; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); overflow: hidden; }
+        .body { display: flex; min-height: 260px; }
+        .sidebar { width: 190px; flex-shrink: 0; background: #f8fafc; border-right: 1px solid #f1f5f9; }
+        .sb-head { padding: 18px 20px 14px; border-bottom: 1px solid #f1f5f9; }
+        .sb-title { font-size: 15px; font-weight: 800; color: #302A40; line-height: 1.3; }
+        .sb-sub { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+        .step-row { display: flex; align-items: center; gap: 10px; padding: 11px 20px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.2s; }
+        .step-row:hover:not(.active) { background: rgba(0,166,235,0.04); }
+        .step-row.active { background: white; }
+        .sdot { width: 7px; height: 7px; border-radius: 50%; background: #e2e8f0; flex-shrink: 0; transition: background 0.2s; }
+        .step-row.active .sdot { background: var(--sc); }
+        .s-info { flex: 1; }
+        .s-no { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: #cbd5e1; line-height: 1; margin-bottom: 3px; }
+        .step-row.active .s-no { color: var(--sc); }
+        .s-nm { font-size: 12.5px; font-weight: 700; color: #94a3b8; line-height: 1.2; }
+        .step-row.active .s-nm { color: #1e293b; }
+        .panel { flex: 1; padding: 22px 26px; display: flex; flex-direction: column; gap: 14px; min-width: 0; animation: fi 0.25s ease; }
+        @keyframes fi { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+        .p-top { display: flex; align-items: flex-start; gap: 14px; }
+        .p-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+        .p-r { flex: 1; }
+        .p-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: white; margin-bottom: 5px; }
+        .p-title { font-size: 19px; font-weight: 800; color: #1e293b; margin: 0; }
+        .p-desc { font-size: 13px; line-height: 1.65; color: #475569; }
+        .caps { background: #f8fafc; border-radius: 10px; padding: 12px 16px; }
+        .caps-lbl { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 9px; }
+        .cap { display: flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; color: #334155; margin-bottom: 7px; }
+        .cap:last-child { margin-bottom: 0; }
+        .cap-ck { width: 17px; height: 17px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; color: white; flex-shrink: 0; font-weight: 800; }
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-top: 1px solid #f1f5f9; }
+        .nb { font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 700; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 8px; transition: all 0.2s; color: #64748b; }
+        .nb:hover:not(:disabled) { background: #f1f5f9; color: #1e293b; }
+        .nb:disabled { opacity: 0.3; cursor: default; }
+        .nb.nx { color: white; }
+        .nb.nx:hover:not(:disabled) { filter: brightness(0.92); }
+        .dots { display: flex; gap: 5px; align-items: center; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: #e2e8f0; transition: all 0.2s; }
+        .dot.on { transform: scale(1.5); }
     </style>
 </head>
 <body>
-<div class="tab-bar" id="tab-bar"></div>
-<div id="panels"></div>
+<div class="widget" id="w"></div>
 <script>
-const TABS = [
-    { id:"setup",      title:"Initial Setup",           subtitle:"Account Creation & Credential Recovery", color:"#00A6EB",
-      steps:[{ title:"Account Creation",   desc:"Admins oversee account creation and credential recovery including 'Forgot email?' to ensure consistent and secure access to the workspace." },
-             { title:"Credential Recovery", desc:"Procedure for recovering access if users forget credentials, ensuring minimum disruption to the team." }] },
-    { id:"deployment", title:"Global Deployment",        subtitle:"Localization & Language Support",         color:"#E60036",
-      steps:[{ title:"Localization",   desc:"Align AI-driven productivity tools with linguistic and regional needs using supported global languages including Español, Français, 日本語, and Deutsch." },
-             { title:"User Training",  desc:"Educate users on best practices including session security and compliance through Help resources." }] },
-    { id:"security",   title:"Security Best Practices",  subtitle:"Session Management & Compliance",         color:"#00A6EB",
-      steps:[{ title:"Session Security", desc:"Enforce use of private browsing or Guest mode to protect company data when accessing accounts on shared or public computers." },
-             { title:"Compliance",       desc:"Ensure users review Help, Privacy, and Terms to align with organizational AI policies." }] }
+const STEPS = [
+    { color:"#00A6EB", ibg:"rgba(0,166,235,0.1)", icon:"🔑",
+      title:"Initial Setup", badge:"Account & Recovery",
+      desc:"Admins oversee account creation and credential recovery to ensure consistent, secure access to the workspace for every team member.",
+      caps:["Account creation via Admin Console","'Forgot email?' credential recovery workflow","Secure onboarding procedures for new users"] },
+    { color:"#E60036", ibg:"rgba(230,0,54,0.1)", icon:"🌐",
+      title:"Global Deployment", badge:"Localization & Training",
+      desc:"Align AI-driven productivity tools with the linguistic and regional requirements of international IT teams across the organization.",
+      caps:["Language support: Español, Français, 日本語, Deutsch","Regional compliance and policy alignment","Localized user training and documentation"] },
+    { color:"#302A40", ibg:"rgba(48,42,64,0.08)", icon:"🔐",
+      title:"Security Best Practices", badge:"Session & Compliance",
+      desc:"Enforce organizational security policies to protect company data and maintain compliance with AI governance and data handling requirements.",
+      caps:["Private browsing / Guest mode on shared devices","Help, Privacy and Terms review policy","AI governance and data access compliance"] }
 ];
-let active = TABS[0].id;
-const tabBar  = document.getElementById('tab-bar');
-const panels  = document.getElementById('panels');
+let cur = 0;
+const w = document.getElementById('w');
 function render() {
-    tabBar.innerHTML = ''; panels.innerHTML = '';
-    TABS.forEach(tab => {
-        const btn = document.createElement('button');
-        btn.className = 'tab-btn' + (tab.id === active ? ' active' : '');
-        btn.textContent = tab.title;
-        if (tab.id === active) { btn.style.borderBottomColor = tab.color; btn.style.color = tab.color; }
-        btn.addEventListener('click', () => { active = tab.id; render(); ping(); });
-        tabBar.appendChild(btn);
-        const panel = document.createElement('div');
-        panel.className = 'panel' + (tab.id === active ? ' visible' : '');
-        const stepsHtml = tab.steps.map(s => `
-            <div class="step-card" style="border-top: 3px solid ${tab.color}">
-                <p class="step-title" style="color:${tab.color}">${s.title}</p>
-                <p class="step-desc">${s.desc}</p>
-            </div>`).join('');
-        panel.innerHTML = `
-            <p class="panel-title">${tab.title}</p>
-            <span class="panel-badge" style="background:${tab.color}">${tab.subtitle}</span>
-            <div class="steps-grid">${stepsHtml}</div>`;
-        panels.appendChild(panel);
-    });
+    const s = STEPS[cur];
+    const sb = STEPS.map((t,i) => `
+        <div class="step-row ${i===cur?'active':''}" style="--sc:${t.color};${i===cur?'border-left-color:'+t.color+';':''}" data-i="${i}">
+            <div class="sdot"></div>
+            <div class="s-info"><div class="s-no">Step ${i+1}</div><div class="s-nm">${t.title}</div></div>
+        </div>`).join('');
+    const caps = s.caps.map(c => `<div class="cap"><div class="cap-ck" style="background:${s.color}">✓</div>${c}</div>`).join('');
+    const dots = STEPS.map((_,i) => `<div class="dot ${i===cur?'on':''}" style="${i===cur?'background:'+s.color:''}"></div>`).join('');
+    w.innerHTML = `
+        <div class="body">
+            <div class="sidebar">
+                <div class="sb-head"><div class="sb-title">Workspace<br>Workflow</div><div class="sb-sub">3-step guide</div></div>
+                ${sb}
+            </div>
+            <div class="panel">
+                <div class="p-top">
+                    <div class="p-icon" style="background:${s.ibg}">${s.icon}</div>
+                    <div class="p-r">
+                        <span class="p-badge" style="background:${s.color}">${s.badge}</span>
+                        <p class="p-title">${s.title}</p>
+                    </div>
+                </div>
+                <p class="p-desc">${s.desc}</p>
+                <div class="caps"><div class="caps-lbl">Key Capabilities</div>${caps}</div>
+            </div>
+        </div>
+        <div class="nav">
+            <button class="nb" id="pv" ${cur===0?'disabled':''}>← Previous</button>
+            <div class="dots">${dots}</div>
+            <button class="nb nx" id="nx" style="background:${cur===STEPS.length-1?'#e2e8f0':s.color};color:${cur===STEPS.length-1?'#94a3b8':'white'}" ${cur===STEPS.length-1?'disabled':''}>Next Step →</button>
+        </div>`;
+    w.querySelectorAll('.step-row').forEach(el => el.addEventListener('click', ()=>{cur=+el.dataset.i;render();ping();}));
+    w.querySelector('#pv')?.addEventListener('click', ()=>{if(cur>0){cur--;render();ping();}});
+    w.querySelector('#nx')?.addEventListener('click', ()=>{if(cur<STEPS.length-1){cur++;render();ping();}});
 }
-function ping() {
-    const h = document.documentElement.scrollHeight;
-    if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
-}
+function ping() { const h=document.documentElement.scrollHeight; if(h>50) window.parent.postMessage({type:'resize',height:h},'*'); }
 render();
 new ResizeObserver(ping).observe(document.body);
-setTimeout(ping, 150); setTimeout(ping, 500);
+setTimeout(ping,150);setTimeout(ping,500);
 </script>
 </body>
 </html>
