@@ -110,7 +110,7 @@ function render() {
         bottom = `<div class="submit-row"><button class="btn btn-submit" id="sbmt" ${allDone?'':'disabled'}>Submit Answers</button></div>`;
     } else {
         const sc = Q.filter(q=>answers[q.id]===q.correct).length;
-        const pass = sc >= Math.ceil(Q.length*0.6);
+        const pass = sc >= Math.ceil(Q.length*0.8);
         bottom = `<div class="score-card">
             <div class="score-label">Your Score</div>
             <div class="score-ring ${pass?'pass':'fail'}"><span class="score-num">${sc}/${Q.length}</span></div>
