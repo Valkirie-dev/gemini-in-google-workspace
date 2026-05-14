@@ -76,6 +76,9 @@ ifdef::env-name[:relfilesuffix: .adoc]
 
 * xref:Module-1_Introduction-to-NotebookLM/module-1_main.adoc[Module 1: Introduction to NotebookLM]
 
+* xref:Module-2_Advanced-Features/module-2_main.adoc[Module 2: Advanced Features]
+  + xref:Module-2_Advanced-Features/Unit-2_Gemini-in-Gmail/unit-2_main.adoc[Unit 2: Gemini in Gmail]
+
 ====
 
 image::images/footer.png[Under, width=100%]

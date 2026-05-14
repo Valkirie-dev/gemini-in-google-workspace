@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Check Yourself</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap");
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  font-family: "Manrope", system-ui, sans-serif;
+  margin: 0;
+  background: #f9fafb;
+  color: #1e293b;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  max-width: 740px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.scenario-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 24px 28px 28px 28px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #302a40;
+}
+.choices-container {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.choice-card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  flex: 1 1 240px;
+  min-width: 240px;
+  cursor: pointer;
+  position: relative;
+  padding: 16px 20px;
+  user-select: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.choice-card:hover {
+  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+.choice-card.best {
+  border: 3px solid #22c55e;
+}
+.choice-card.acceptable {
+  border: 3px solid #facc15;
+}
+.choice-card.poor {
+  border: 3px solid #dc2626;
+}
+.choice-label {
+  font-weight: 700;
+  color: #302a40;
+  font-size: 17px;
+}
+.choice-description {
+  font-weight: 400;
+  font-size: 14px;
+  color: #475569;
+  flex-grow: 1;
+}
+.result-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: rgba(48, 42, 64, 0.85);
+  color: white;
+  padding: 14px 18px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+}
+.choice-card.revealed .result-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+.result-badge {
+  padding: 6px 14px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  user-select: none;
+  font-size: 13px;
+  font-weight: 800;
+  color: white;
+}
+.result-best {
+  background-color: #22c55e;
+}
+.result-acceptable {
+  background-color: #facc15;
+  color: #1e293b;
+}
+.result-poor {
+  background-color: #dc2626;
+}
+button.retry-btn {
+  margin-top: 20px;
+  align-self: center;
+  background: #00a6eb;
+  color: white;
+  border: none;
+  font-weight: 700;
+  padding: 8px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s ease;
+}
+button.retry-btn:hover {
+  background: #0087c2;
+}
+@media (max-width: 620px) {
+  .choices-container {
+    flex-direction: column;
+  }
+  .choice-card {
+    min-width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+<div class="scenario-card" aria-live="polite" aria-atomic="true" id="scenarioText">
+</div>
+<div class="choices-container" role="list" aria-label="Choices">
+</div>
+<button class="retry-btn" id="retryBtn" style="display:none;">Retry</button>
+<script src='../../../../util/scripts/client.js'></script>
+<script>
+const scenarios = [
+  {
+    scenario: "A customer support team wants to reduce email drafting time during high volume periods. What Gemini feature should they enable?",
+    choices: [
+      { label: "A) AI Overview", description: "General summary card showing key points in inbox.", result: "poor", badge: "Not Recommended", explanation: "AI Overview provides summary info but is not focused on fast reply drafting." },
+      { label: "B) Contextual Smart Replies", description: "Quick relevant reply suggestions based on conversation context.", result: "best", badge: "Best Practice ", explanation: "Contextual Smart Replies provide fast, relevant reply suggestions, boosting response speed." },
+      { label: "C) Email Summarization", description: "Summarize long email threads into concise points.", result: "acceptable", badge: "Acceptable", explanation: "Summarization helps with understanding but does not speed drafting replies." }
+    ]
+  },
+  {
+    scenario: "A project manager needs to quickly summarize long email threads to prioritize tasks. Which feature helps?",
+    choices: [
+      { label: "A) Help me write", description: "AI-generated draft email creation/refinement.", result: "poor", badge: "Not Recommended", explanation: "Help me write aids drafting emails, not summarizing." },
+      { label: "B) Email Summarization", description: "Condenses long threads into actionable summaries.", result: "best", badge: "Best Practice ", explanation: "Summarization condenses long threads into actionable summaries." },
+      { label: "C) Workspace Intelligence", description: "Secure AI system retrieving email and Drive content contextually.", result: "acceptable", badge: "Acceptable", explanation: "Workspace Intelligence supports context but doesn't directly summarize for the user." }
+    ]
+  },
+  {
+    scenario: "An IT admin plans to assign AI features gradually across departments. How should they proceed?",
+    choices: [
+      { label: "A) Assign licenses and set policies per Organizational Units in Admin Console", description: "Controlled rollout via Admin Console organizational units.", result: "best", badge: "Best Practice ", explanation: "Using OUs ensures controlled, compliant rollout tailored to needs." },
+      { label: "B) Request individual users to self-enable features", description: "Asking users to turn on features themselves.", result: "poor", badge: "Not Recommended", explanation: "Self-enabling lacks control and compliance assurance." },
+      { label: "C) Turn on AI for entire organization without controls", description: "Enable AI features broadly without restrictions.", result: "acceptable", badge: "Acceptable", explanation: "Broad enabling is easier but risks privacy, compliance, and policy issues." }
+    ]
+  }
+];
+const scenarioTextEl = document.getElementById('scenarioText');
+const choicesContainer = document.querySelector('.choices-container');
+const retryBtn = document.getElementById('retryBtn');
+let currentScenario = 0;
+let score = 0;
+let activityId = "check-yourself";
+
+function clearChoices() {
+  choicesContainer.innerHTML = "";
+}
+function renderScenario() {
+  scenarioTextEl.textContent = scenarios[currentScenario].scenario;
+  clearChoices();
+  scenarios[currentScenario].choices.forEach((choice, index) => {
+    const choiceCard = document.createElement('div');
+    choiceCard.className = 'choice-card';
+    choiceCard.setAttribute('role', 'button');
+    choiceCard.tabIndex = 0;
+    choiceCard.dataset.index = index;
+    // Label and description
+    const labelElem = document.createElement('div');
+    labelElem.className = 'choice-label';
+    labelElem.textContent = choice.label;
+    const descElem = document.createElement('div');
+    descElem.className = 'choice-description';
+    descElem.textContent = choice.description;
+    choiceCard.appendChild(labelElem);
+    choiceCard.appendChild(descElem);
+
+    choiceCard.addEventListener('click', () => handleChoice(choiceCard, choice));
+    choiceCard.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleChoice(choiceCard, choice);
+      }
+    });
+    choicesContainer.appendChild(choiceCard);
+  });
+  retryBtn.style.display = "none";
+  scenarioTextEl.setAttribute('aria-live', 'polite');
+}
+
+function handleChoice(cardEl, choice) {
+  // Ignore if already revealed
+  if(cardEl.classList.contains('revealed')) return;
+  // Reveal all results for this scenario
+  const choiceCards = choicesContainer.querySelectorAll('.choice-card');
+  choiceCards.forEach((el, i) => {
+    const ch = scenarios[currentScenario].choices[i];
+    el.classList.add('revealed');
+    if(ch.result === 'best') el.classList.add('best');
+    else if(ch.result === 'acceptable') el.classList.add('acceptable');
+    else el.classList.add('poor');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'result-overlay';
+    const badge = document.createElement('div');
+    badge.className = 'result-badge';
+    badge.textContent = ch.badge;
+    if(ch.result === 'best') badge.classList.add('result-best');
+    else if(ch.result === 'acceptable') badge.classList.add('result-acceptable');
+    else badge.classList.add('result-poor');
+    overlay.appendChild(badge);
+    const expl = document.createElement('div');
+    expl.textContent = ch.explanation;
+    overlay.appendChild(expl);
+    el.appendChild(overlay);
+  });
+  // Update score if best choice
+  if(choice.result === 'best') score++;
+  currentScenario++;
+  if(currentScenario < scenarios.length){
+    setTimeout(() => {
+      renderScenario();
+    }, 1800);
+  } else {
+    setTimeout(() => {
+      showScore();
+    }, 1800);
+  }
+}
+function showScore() {
+  clearChoices();
+  scenarioTextEl.textContent = `You scored ${score} out of ${scenarios.length}!`;
+  const passed = score >= Math.ceil(scenarios.length * 0.8);
+  const scoreRing = document.createElement('div');
+  scoreRing.style.width = '160px';
+  scoreRing.style.height = '160px';
+  scoreRing.style.margin = '24px auto';
+  scoreRing.style.borderRadius = '50%';
+  scoreRing.style.border = `12px solid ${passed ? '#22c55e' : '#dc2626'}`;
+  scoreRing.style.display = 'flex';
+  scoreRing.style.alignItems = 'center';
+  scoreRing.style.justifyContent = 'center';
+  scoreRing.style.fontWeight = '800';
+  scoreRing.style.fontSize = '36px';
+  scoreRing.style.color = passed ? '#22c55e' : '#dc2626';
+  scoreRing.textContent = `${score}/${scenarios.length}`;
+  choicesContainer.appendChild(scoreRing);
+
+  const passText = document.createElement('div');
+  passText.style.textAlign = 'center';
+  passText.style.fontWeight = '700';
+  passText.style.fontSize = '18px';
+  passText.style.color = passed ? '#22c55e' : '#dc2626';
+  passText.style.marginBottom = '20px';
+  passText.textContent = passed ? 'Passed ✅' : 'Try Again ❌';
+  choicesContainer.insertBefore(passText, scoreRing);
+
+  retryBtn.style.display = "inline-block";
+}
+
+retryBtn.addEventListener('click', () => {
+  currentScenario = 0;
+  score = 0;
+  renderScenario();
+});
+
+renderScenario();
+
+// ActivityClient integration
+if(window.ActivityClient) {
+  window.ActivityClient.registerActivity(activityId);
+  // send score when test completes
+  const origShowScore = showScore;
+  showScore = function() {
+    origShowScore();
+    const passed = score >= Math.ceil(scenarios.length * 0.8);
+    window.ActivityClient.sendScore(null, score, activityId);
+  };
+}
+
+// Resize ping pattern
+function ping() {
+  const h = document.documentElement.scrollHeight;
+  if(h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
+}
+new ResizeObserver(ping).observe(document.body);
+setTimeout(ping, 150);
+setTimeout(ping, 500);
+</script>
+</body>
+</html>

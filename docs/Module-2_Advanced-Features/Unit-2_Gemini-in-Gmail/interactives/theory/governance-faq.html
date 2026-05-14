@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enterprise Governance FAQs</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap");
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  margin: 0;
+  background: #f9fafb;
+  color: #1e293b;
+  overflow-x: hidden;
+  padding: 16px;
+}
+.accordion {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.accordion-item {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  overflow: hidden;
+  border-left: 6px solid transparent;
+  transition: border-color 0.3s ease;
+}
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  padding: 14px 20px;
+  user-select: none;
+  font-weight: 700;
+  font-size: 16px;
+  color: #302a40;
+  border-left: 6px solid transparent;
+  border-radius: 16px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.accordion-header.active {
+  border-left-color: #00a6eb;
+  background-color: rgba(0, 166, 235, 0.12);
+}
+.accordion-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(0,166,235,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  user-select: none;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  color: #00a6eb;
+}
+.accordion-icon.rotate {
+  transform: rotate(180deg);
+}
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #475569;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.accordion-body.open {
+  padding: 14px 20px 20px 20px;
+  max-height: 1000px;
+}
+.accordion-body ul {
+  padding-left: 20px;
+  margin-top: 6px;
+}
+.accordion-body ul li {
+  margin-bottom: 4px;
+}
+@media (max-width: 480px) {
+  .accordion {
+    padding: 0 12px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="accordion" role="list">
+
+  <div class="accordion-item" data-index="0">
+    <div class="accordion-header active" tabindex="0" role="button" aria-expanded="true" aria-controls="body-0" id="header-0">
+      <div class="accordion-icon" aria-hidden="true">🔐</div>
+      How are Gemini AI licenses managed?
+    </div>
+    <div class="accordion-body open" id="body-0" role="region" aria-labelledby="header-0">
+      Licensing is controlled through the Google Admin Console, where admins assign AI features per user or Organizational Unit (OU), ensuring compliance with organizational policies.
+    </div>
+  </div>
+
+  <div class="accordion-item" data-index="1">
+    <div class="accordion-header" tabindex="0" role="button" aria-expanded="false" aria-controls="body-1" id="header-1">
+      <div class="accordion-icon" aria-hidden="true">👥</div>
+      What is the role of Organizational Units?
+    </div>
+    <div class="accordion-body" id="body-1" role="region" aria-labelledby="header-1">
+      Organizational Units (OUs) allow segmentation of the organization to apply tailored AI settings and restrictions by department or function.
+    </div>
+  </div>
+
+  <div class="accordion-item" data-index="2">
+    <div class="accordion-header" tabindex="0" role="button" aria-expanded="false" aria-controls="body-2" id="header-2">
+      <div class="accordion-icon" aria-hidden="true">⏳</div>
+      How long do policy changes take to apply?
+    </div>
+    <div class="accordion-body" id="body-2" role="region" aria-labelledby="header-2">
+      Changes propagate within 24 to 48 hours; administrators should communicate timelines to users.
+    </div>
+  </div>
+
+  <div class="accordion-item" data-index="3">
+    <div class="accordion-header" tabindex="0" role="button" aria-expanded="false" aria-controls="body-3" id="header-3">
+      <div class="accordion-icon" aria-hidden="true">🛡️</div>
+      What are recommended best practices?
+    </div>
+    <div class="accordion-body" id="body-3" role="region" aria-labelledby="header-3">
+      <ul>
+        <li>Phased deployments</li>
+        <li>Executive sponsorship</li>
+        <li>Internal Google Guides</li>
+        <li>Enforcing Data Loss Prevention (DLP) policies</li>
+      </ul>
+      These strengthen AI governance and adoption.
+    </div>
+  </div>
+
+  <div class="accordion-item" data-index="4">
+    <div class="accordion-header" tabindex="0" role="button" aria-expanded="false" aria-controls="body-4" id="header-4">
+      <div class="accordion-icon" aria-hidden="true">⚠️</div>
+      How to handle synchronization errors?
+    </div>
+    <div class="accordion-body" id="body-4" role="region" aria-labelledby="header-4">
+      Verify license assignments, check Admin Console statuses, and allow propagation time. Address "Error 13" by diagnosing permission mismatches.
+    </div>
+  </div>
+
+</div>
+<script>
+const accordionHeaders = document.querySelectorAll('.accordion-header');
+
+function closeAllExcept(index) {
+  accordionHeaders.forEach((header, i) => {
+    const body = document.getElementById('body-' + i);
+    if(i !== index) {
+      header.classList.remove('active');
+      header.setAttribute('aria-expanded', 'false');
+      body.classList.remove('open');
+      body.style.maxHeight = null;
+    }
+  });
+}
+
+accordionHeaders.forEach((header, index) => {
+  header.addEventListener('click', () => {
+    const isOpen = header.classList.contains('active');
+    if (!isOpen) {
+      closeAllExcept(index);
+      header.classList.add('active');
+      header.setAttribute('aria-expanded', 'true');
+      const body = document.getElementById('body-' + index);
+      body.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    } else {
+      header.classList.remove('active');
+      header.setAttribute('aria-expanded', 'false');
+      const body = document.getElementById('body-' + index);
+      body.classList.remove('open');
+      body.style.maxHeight = null;
+    }
+  });
+  header.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      header.click();
+    }
+  });
+});
+// Set first open maxHeight on load
+document.addEventListener('DOMContentLoaded', () => {
+  const firstBody = document.getElementById('body-0');
+  firstBody.style.maxHeight = firstBody.scrollHeight + 'px';
+});
+
+// Resize ping pattern
+function ping() {
+  const h = document.documentElement.scrollHeight;
+  if(h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
+}
+new ResizeObserver(ping).observe(document.body);
+setTimeout(ping, 150);
+setTimeout(ping, 500);
+</script>
+</body>
+</html>

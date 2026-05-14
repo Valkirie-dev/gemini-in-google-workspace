@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gemini in Gmail: AI Workflow Steps</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap");
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  font-family: "Manrope", system-ui, sans-serif;
+  margin: 0;
+  background: #f9fafb;
+  color: #1e293b;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+.sidebar {
+  width: 190px;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 26px 18px 24px 18px;
+  border-radius: 16px 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.sidebar h1 {
+  font-weight: 800;
+  font-size: 20px;
+  color: #302a40;
+  margin: 0 0 6px 0;
+}
+.sidebar p {
+  font-weight: 600;
+  font-size: 14px;
+  color: #475569;
+  margin: 0;
+  margin-bottom: 12px;
+}
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px 8px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #475569;
+  font-weight: 600;
+  font-size: 14px;
+  user-select: none;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+.step-item.active {
+  background: white;
+  color: #00a6eb;
+  border-left: 3px solid #00a6eb;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0, 166, 235, 0.15);
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00a6eb;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 2px rgba(0, 166, 235, 0.35));
+}
+.step-num-chip {
+  flex-shrink: 0;
+  background: #00a6eb;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  user-select: none;
+}
+.step-name {
+  flex-grow: 1;
+  user-select: none;
+}
+.main-panel {
+  flex-grow: 1;
+  background: white;
+  border-radius: 0 16px 16px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 28px 30px 32px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  min-height: 360px;
+}
+.icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #c1e8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00a6eb;
+  font-size: 40px;
+  user-select: none;
+  box-shadow: 0 4px 15px rgba(0, 166, 235, 0.3);
+}
+.badge-chip {
+  display: inline-block;
+  background: #00a6eb;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 3px 8px;
+  border-radius: 14px;
+  user-select: none;
+  width: max-content;
+  margin-top: 2px;
+  letter-spacing: 0.03em;
+}
+.title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 22px;
+  color: #302a40;
+}
+.description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #475569;
+  margin-top: 6px;
+  flex-grow: 1;
+}
+.key-capabilities {
+  border: 2px solid #00a6eb;
+  border-radius: 14px;
+  background: #e3f4ff;
+  padding: 14px 18px;
+  color: #00a6eb;
+  font-weight: 700;
+  font-size: 13px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  user-select: none;
+}
+.key-capabilities span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.key-capabilities span:before {
+  content: '✓';
+  display: inline-block;
+  font-weight: 800;
+  font-size: 16px;
+}
+.nav-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2px;
+}
+.nav-button {
+  font-size: 14px;
+  font-weight: 700;
+  color: #00a6eb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.18s ease;
+}
+.nav-button:disabled {
+  color: #94a3b8;
+  cursor: default;
+}
+.dots-indicators {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  margin: 0 12px;
+}
+.dot-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #94a3b8;
+  transition: background-color 0.18s ease;
+  flex-shrink: 0;
+}
+.dot-indicator.active {
+  background: #00a6eb;
+}
+.fadeIn {
+  animation: fadeIn 0.25s ease forwards;
+  opacity: 0;
+}
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 600px) {
+  body {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .steps-list {
+    flex-direction: row;
+    gap: 12px;
+    margin-top: 0;
+  }
+  .step-item {
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 12px 4px 12px;
+    white-space: nowrap;
+  }
+  .main-panel {
+    border-radius: 0 0 16px 16px;
+  }
+  .nav-footer {
+    margin-top: 20px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="sidebar" aria-label="Workflow steps sidebar">
+  <h1>Gemini in Gmail</h1>
+  <p>AI Workflow Steps</p>
+  <div class="steps-list" id="stepsList" role="list" aria-label="Workflow steps">
+    <!-- steps inserted here -->
+  </div>
+</div>
+<div class="main-panel" id="mainPanel" role="region" aria-live="polite" aria-atomic="true" tabindex="0">
+  <div class="fadeIn" id="iconBox" aria-hidden="true"></div>
+  <div class="badge-chip" id="badgeChip"></div>
+  <h2 class="title" id="stepTitle"></h2>
+  <p class="description" id="stepDescription"></p>
+  <div class="key-capabilities" aria-label="Key capabilities">
+  </div>
+  <div class="nav-footer">
+    <button class="nav-button" id="prevBtn" aria-label="Previous step">&larr; Previous</button>
+    <div class="dots-indicators" id="dotsIndicators" aria-hidden="true"></div>
+    <button class="nav-button" id="nextBtn" aria-label="Next step">Next Step &rarr;</button>
+  </div>
+</div>
+<script>
+const STEPS = [
+  {
+    icon: "✉️",
+    iconBg: "rgba(0,166,235,0.15)",
+    iconColor: "#00A6EB",
+    title: "Initiate Task",
+    description: "The user opens or composes an email in Gmail, activating Gemini AI for context analysis.",
+    keyCaps: [
+      "Email compose or open triggers AI",
+      "Context is gathered immediately",
+      "Ready to assist with your task"
+    ]
+  },
+  {
+    icon: "🔍",
+    iconBg: "rgba(0,166,235,0.15)",
+    iconColor: "#00A6EB",
+    title: "Analyze Context",
+    description: "Gemini evaluates the email content, conversation history, and linked Workspace files to discern user intent and relevant background.",
+    keyCaps: [
+      "Deep content understanding",
+      "Conversation and file context included",
+      "Intent estimation for relevance"
+    ]
+  },
+  {
+    icon: "💬",
+    iconBg: "rgba(0,166,235,0.15)",
+    iconColor: "#00A6EB",
+    title: "Provide Prompt",
+    description: "Users input natural language instructions or tag Drive files for specific data references to enhance output precision.",
+    keyCaps: [
+      "Natural language instructions supported",
+      "File tagging for precise info",
+      "Improves AI output quality"
+    ]
+  },
+  {
+    icon: "📝",
+    iconBg: "rgba(0,166,235,0.15)",
+    iconColor: "#00A6EB",
+    title: "Generate & Refine",
+    description: "Gemini produces draft emails, smart replies, or summarizations. Users tailor tone, length, and style via interactive chips before finalizing content.",
+    keyCaps: [
+      "Drafts, replies, summarizations",
+      "Interactive tone and style options",
+      "User refines output before send"
+    ]
+  },
+  {
+    icon: "✅",
+    iconBg: "rgba(0,166,235,0.15)",
+    iconColor: "#00A6EB",
+    title: "Review & Send",
+    description: "The user carefully reviews AI-generated content to ensure accuracy and appropriateness before sending or saving the message.",
+    keyCaps: [
+      "Manual review mandatory",
+      "Ensure content fits context",
+      "Send or save final message"
+    ]
+  }
+];
+
+const sidebar = document.getElementById("stepsList");
+const mainPanel = document.getElementById("mainPanel");
+const iconBox = document.getElementById("iconBox");
+const badgeChip = document.getElementById("badgeChip");
+const stepTitle = document.getElementById("stepTitle");
+const stepDescription = document.getElementById("stepDescription");
+const keyCapsBox = mainPanel.querySelector(".key-capabilities");
+const dotsContainer = document.getElementById("dotsIndicators");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+let currentStep = 0;
+
+function renderSidebar() {
+  sidebar.innerHTML = "";
+  STEPS.forEach((step, i) => {
+    const div = document.createElement("div");
+    div.className = "step-item" + (i === currentStep ? " active" : "");
+    div.setAttribute("role", "listitem");
+    div.tabIndex = 0;
+    div.dataset.index = i;
+
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    div.appendChild(dot);
+
+    const chip = document.createElement("span");
+    chip.className = "step-num-chip";
+    chip.textContent = i + 1;
+    div.appendChild(chip);
+
+    const name = document.createElement("span");
+    name.className = "step-name";
+    name.textContent = step.title;
+    div.appendChild(name);
+
+    div.addEventListener("click", () => {
+      if (currentStep !== i) {
+        currentStep = i;
+        updateUI();
+      }
+    });
+    div.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        div.click();
+      }
+    });
+
+    sidebar.appendChild(div);
+  });
+}
+function renderDots() {
+  dotsContainer.innerHTML = "";
+  STEPS.forEach((s, i) => {
+    const dot = document.createElement("span");
+    dot.className = "dot-indicator" + (i === currentStep ? " active" : "");
+    dotsContainer.appendChild(dot);
+  });
+}
+function updateUI() {
+  // Update sidebar active class
+  [...sidebar.children].forEach((el, i) => {
+    el.classList.toggle("active", i === currentStep);
+  });
+  // Animate fade in on main panel elements
+  iconBox.classList.remove("fadeIn");
+  stepTitle.classList.remove("fadeIn");
+  stepDescription.classList.remove("fadeIn");
+  keyCapsBox.classList.remove("fadeIn");
+  badgeChip.classList.remove("fadeIn");
+  void iconBox.offsetWidth; // Trigger reflow for restart animation
+  iconBox.classList.add("fadeIn");
+  stepTitle.classList.add("fadeIn");
+  stepDescription.classList.add("fadeIn");
+  keyCapsBox.classList.add("fadeIn");
+  badgeChip.classList.add("fadeIn");
+
+  const step = STEPS[currentStep];
+  // Icon box
+  iconBox.textContent = step.icon;
+  iconBox.style.backgroundColor = step.iconBg;
+  iconBox.style.color = step.iconColor;
+
+  // Badge chip
+  badgeChip.textContent = `Step ${currentStep + 1} of ${STEPS.length}`;
+
+  // Title & desc
+  stepTitle.textContent = step.title;
+  stepDescription.textContent = step.description;
+
+  // Key capabilities
+  keyCapsBox.innerHTML = "";
+  step.keyCaps.forEach(caps => {
+    const sp = document.createElement("span");
+    sp.textContent = caps;
+    keyCapsBox.appendChild(sp);
+  });
+  renderDots();
+
+  prevBtn.disabled = currentStep === 0;
+  nextBtn.disabled = currentStep === STEPS.length - 1;
+  // For accessibility focus
+  mainPanel.focus();
+}
+prevBtn.addEventListener("click", () => {
+  if (currentStep > 0) {
+    currentStep--;
+    updateUI();
+  }
+});
+nextBtn.addEventListener("click", () => {
+  if (currentStep < STEPS.length - 1) {
+    currentStep++;
+    updateUI();
+  }
+});
+
+renderSidebar();
+updateUI();
+
+// Resize ping pattern
+function ping() {
+  const h = document.documentElement.scrollHeight;
+  if (h > 50) window.parent.postMessage({ type: "resize", height: h }, "*");
+}
+new ResizeObserver(ping).observe(document.body);
+setTimeout(ping, 150);
+setTimeout(ping, 500);
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Evolution of Gemini AI Features in Gmail</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap");
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Manrope', system-ui, sans-serif;
+  margin: 0;
+  background: #f9fafb;
+  color: #1e293b;
+  padding: 16px;
+  overflow-x: hidden;
+}
+.timeline-container {
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-left: 46px;
+}
+.spine {
+  position: absolute;
+  top: 0;
+  left: 22px;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, #00a6eb, #e60036);
+  border-radius: 1px;
+  z-index: 1;
+}
+.timeline-event {
+  position: relative;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  width: 320px;
+  padding: 16px 20px;
+  margin-bottom: 30px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  opacity: 0;
+  transform: translateX(-40px);
+  animation-fill-mode: forwards;
+  animation-duration: 0.3s;
+}
+.timeline-event.right {
+  margin-left: 36px;
+  transform: translateX(40px);
+}
+.timeline-event:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.timeline-date-bubble {
+  position: absolute;
+  left: 8px;
+  top: 16px;
+  background: #00a6eb;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0, 166, 235, 0.35);
+  user-select: none;
+  width: max-content;
+  white-space: nowrap;
+}
+.timeline-date-bubble.red {
+  background: #e60036;
+  box-shadow: 0 2px 8px rgba(230,0,54,0.35);
+}
+.timeline-event.expanded {
+  max-height: none !important;
+}
+.timeline-event .icon {
+  font-size: 28px;
+  user-select: none;
+  margin-bottom: 8px;
+}
+.timeline-event .title {
+  font-weight: 700;
+  font-size: 17px;
+  margin: 0 0 8px 0;
+  color: #302a40;
+}
+.timeline-event .summary {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.timeline-event .details {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  display: none;
+}
+.timeline-event.expanded .details {
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 720px) {
+  .timeline-event {
+    width: 100%;
+    margin-left: 46px !important;
+    transform: translateX(0) !important;
+  }
+  .timeline-container {
+    padding-left: 22px;
+  }
+  .timeline-date-bubble {
+    left: -66px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="timeline-container" role="list" aria-label="Evolution timeline of Gemini AI features in Gmail">
+  <div class="spine" aria-hidden="true"></div>
+  <article tabindex="0" role="listitem" class="timeline-event left" data-expanded="false" aria-expanded="false" aria-controls="details-0" aria-describedby="date-0">
+    <div class="timeline-date-bubble" id="date-0" style="background:#00A6EB;">2023-2024</div>
+    <div class="icon" aria-hidden="true">🛠️</div>
+    <h3 class="title">Introduction of foundational AI features</h3>
+    <p class="summary">Smart Compose and Smart Reply enabled basic drafting assistance.</p>
+    <div class="details" id="details-0">
+      Early Gemini AI capabilities focused on assisting users with completing sentences faster and providing quick reply options to emails based on context.
+    </div>
+  </article>
+  <article tabindex="0" role="listitem" class="timeline-event right" data-expanded="false" aria-expanded="false" aria-controls="details-1" aria-describedby="date-1">
+    <div class="timeline-date-bubble red" id="date-1" style="background:#E60036;">2025</div>
+    <div class="icon" aria-hidden="true">🚀</div>
+    <h3 class="title">Integration of Gemini AI into Gmail</h3>
+    <p class="summary">Advanced drafting, personalized replies, and summarization capabilities added.</p>
+    <div class="details" id="details-1">
+      Gemini AI was embedded deeply into Gmail, offering improved personalization and AI-powered email summarizations to aid productivity.
+    </div>
+  </article>
+  <article tabindex="0" role="listitem" class="timeline-event left" data-expanded="false" aria-expanded="false" aria-controls="details-2" aria-describedby="date-2">
+    <div class="timeline-date-bubble" id="date-2" style="background:#00A6EB;">Early 2026</div>
+    <div class="icon" aria-hidden="true">⚡</div>
+    <h3 class="title">Launch of AI Expanded Access add-on</h3>
+    <p class="summary">High-capacity users and advanced models like Gemini 3 Pro introduced.</p>
+    <div class="details" id="details-2">
+      This expansion enabled organizations and power users to leverage more powerful AI models and additional access tiers within Gmail.
+    </div>
+  </article>
+  <article tabindex="0" role="listitem" class="timeline-event right" data-expanded="false" aria-expanded="false" aria-controls="details-3" aria-describedby="date-3">
+    <div class="timeline-date-bubble red" id="date-3" style="background:#E60036;">2026</div>
+    <div class="icon" aria-hidden="true">🏢</div>
+    <h3 class="title">Enhancement of enterprise governance and compliance</h3>
+    <p class="summary">Centralized administration and policy controls rolled out.</p>
+    <div class="details" id="details-3">
+      To meet enterprise demands, governance features including licensing and admin console controls ensured compliance and security across organizations.
+    </div>
+  </article>
+  <article tabindex="0" role="listitem" class="timeline-event left" data-expanded="false" aria-expanded="false" aria-controls="details-4" aria-describedby="date-4">
+    <div class="timeline-date-bubble" id="date-4" style="background:#00A6EB;">Mid-2026 and beyond</div>
+    <div class="icon" aria-hidden="true">🔮</div>
+    <h3 class="title">Continuous improvements and multi-modal AI features</h3>
+    <p class="summary">Refined smart replies, deeper Workspace integration, and expanding AI across Workspace apps.</p>
+    <div class="details" id="details-4">
+      Gemini AI continues to evolve delivering more contextual accuracy, better integration, and enterprise-ready innovations in collaboration tools.
+    </div>
+  </article>
+</div>
+<script>
+const timelineEvents = document.querySelectorAll('.timeline-event');
+
+function toggleDetails(event) {
+  const el = event.currentTarget;
+  const expanded = el.getAttribute('aria-expanded') === 'true';
+  if (expanded) {
+    el.setAttribute('aria-expanded', 'false');
+    el.dataset.expanded = "false";
+    el.classList.remove('expanded');
+  } else {
+    // Collapse others to ensure only one expanded at a time
+    timelineEvents.forEach(t => {
+      t.setAttribute('aria-expanded', 'false');
+      t.dataset.expanded = "false";
+      t.classList.remove('expanded');
+    });
+    el.setAttribute('aria-expanded', 'true');
+    el.dataset.expanded = "true";
+    el.classList.add('expanded');
+  }
+}
+timelineEvents.forEach(ev => {
+  ev.addEventListener('click', toggleDetails);
+  ev.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleDetails(e);
+    }
+  });
+  // Animate slideIn
+  ev.style.animationName = "fadeinSlideIn";
+  ev.style.animationDuration = "0.3s";
+  ev.style.opacity = 1;
+});
+function ping() {
+  const h = document.documentElement.scrollHeight;
+  if(h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
+}
+new ResizeObserver(ping).observe(document.body);
+setTimeout(ping,150);
+setTimeout(ping,500);
+</script>
+<style>
+@keyframes fadeinSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+</style>
+</body>
+</html>
