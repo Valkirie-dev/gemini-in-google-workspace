@@ -1,5 +1,7 @@
+++++
 <script src='../../util/scripts/dynamicResizeScript.js'></script>
 <script src='../../util/scripts/tracker.js'></script>
+++++
 
 image::../../images/header.jpg[Hat, width=100%]
 
