@@ -1,196 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Key Terms Flashcards</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <script>
-        tailwind.config = {
-            theme: { extend: {
-                colors: {
-                    primary: '#00A6EB', accent: '#E60036', dark: '#302A40',
-                    muted: '#5f6c7b', lightblue: '#81D0F4', darkblue: '#2A668E',
-                    slate: '#937C8A'
-                },
-                fontFamily: { sans: ['Manrope', 'sans-serif'] }
-            }}
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key Terms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
         body {
-            font-family: 'Manrope', sans-serif;
-            background-color: transparent;
-            margin: 0;
-            padding: 0;
+            font-family: 'Manrope', system-ui, sans-serif;
+            background: transparent;
+            margin: 0; padding: 16px;
             overflow: hidden;
         }
-        #root {
-            display: flow-root;
-            width: 100%;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
         }
-        /* 3D flip (key-terms only) */
-        .perspective-1000 { perspective: 1000px; }
-        .transform-style-3d { transform-style: preserve-3d; }
-        .backface-hidden {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
+        @media (max-width: 680px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 420px) { .grid { grid-template-columns: 1fr; } }
+        .card {
+            position: relative;
+            height: 175px;
+            cursor: pointer;
+            user-select: none;
+            border-radius: 14px;
         }
-        .rotate-y-180 { transform: rotateY(180deg); }
-        /* Fade animation */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .face {
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .face-front {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-left: 4px solid #00A6EB;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .card:hover .face-front {
+            box-shadow: 0 6px 20px rgba(0,166,235,0.18);
+            border-color: #00A6EB;
+        }
+        .face-back {
+            background: linear-gradient(140deg, #00A6EB 0%, #0082c0 100%);
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.97);
+        }
+        .card.flipped .face-front {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.97);
+        }
+        .card.flipped .face-back {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        .card-icon { font-size: 22px; margin-bottom: 8px; line-height: 1; }
+        .card-term { font-size: 14px; font-weight: 800; color: #1e293b; line-height: 1.25; margin-bottom: 5px; }
+        .card-sub { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #00A6EB; }
+        .card-hint { position: absolute; bottom: 10px; right: 14px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #cbd5e1; }
+        .back-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.65; margin-bottom: 10px; }
+        .card-def { font-size: 12.5px; line-height: 1.6; font-weight: 500; }
     </style>
 </head>
 <body>
-<div id="root"></div>
-
-<script type="text/babel">
-const { useState, useEffect, useRef } = React;
-
+<div class="grid" id="grid"></div>
+<script>
 const CARDS = [
-    {
-        id: 1,
-        term: "Gemini in Google Workspace",
-        sub: "Product Suite",
-        icon: "Shield",
-        accent: "#00A6EB",
-        def: "A suite of advanced AI-powered productivity tools integrated within Google Workspace applications to enhance user experience."
-    },
-    {
-        id: 2,
-        term: "Generative AI",
-        sub: "Technology",
-        icon: "Cpu",
-        accent: "#00A6EB",
-        def: "AI technology used by Gemini for tasks such as document creation, email drafting, and data analysis."
-    },
-    {
-        id: 3,
-        term: "Contextual AI Assistance",
-        sub: "Feature",
-        icon: "MessageSquare",
-        accent: "#00A6EB",
-        def: "AI support that adapts to different professional and organizational needs within specific Workspace apps."
-    },
-    {
-        id: 4,
-        term: "Guest Mode / Private Browsing",
-        sub: "Security Feature",
-        icon: "RAG",
-        accent: "#00A6EB",
-        def: "Secure browsing state recommended for users signing into Google Accounts on shared or public devices."
-    },
-    {
-        id: 5,
-        term: "Workflow Automation",
-        sub: "Process",
-        icon: "Target",
-        accent: "#00A6EB",
-        def: "The use of AI-driven insights and tools to improve efficiency and streamline repetitive tasks across Workspace applications."
-    }
+    { icon: "🔷", term: "Gemini in Google Workspace", sub: "Product Suite",      def: "A suite of advanced AI-powered productivity tools integrated within Google Workspace applications to enhance user experience." },
+    { icon: "✨", term: "Generative AI",                sub: "Technology",        def: "AI technology used by Gemini for tasks such as document creation, email drafting, and data analysis." },
+    { icon: "🎯", term: "Contextual AI Assistance",    sub: "Feature",           def: "AI support that adapts to different professional and organizational needs within specific Workspace apps." },
+    { icon: "🔒", term: "Guest Mode / Private Browsing", sub: "Security Feature", def: "Secure browsing state recommended for users signing into Google Accounts on shared or public devices." },
+    { icon: "⚡", term: "Workflow Automation",          sub: "Process",           def: "The use of AI-driven insights and tools to improve efficiency and streamline repetitive tasks across Workspace applications." }
 ];
-
-// Simple inline SVG icons for demonstration (Shield, Cpu, MessageSquare, RAG, Target)
-const ICONS = {
-    Shield: (
-        <svg className="w-6 h-6" fill="#00A6EB" viewBox="0 0 24 24" stroke="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L3 6v6c0 5 3.8 9.74 9 10 5.2-.26 9-5 9-10V6l-9-4z"/>
-        </svg>
-    ),
-    Cpu: (
-        <svg className="w-6 h-6" fill="#00A6EB" viewBox="0 0 24 24" stroke="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="6" y="6" width="12" height="12" rx="2" ry="2" />
-            <path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>
-        </svg>
-    ),
-    MessageSquare: (
-        <svg className="w-6 h-6" fill="#00A6EB" viewBox="0 0 24 24" stroke="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-            <path d="M8 21l4-4 4 4" />
-        </svg>
-    ),
-    RAG: (
-        <svg className="w-6 h-6" fill="#00A6EB" viewBox="0 0 24 24" stroke="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 6v6l4 2" stroke="#fff" strokeWidth="2" fill="none"/>
-        </svg>
-    ),
-    Target: (
-        <svg className="w-6 h-6" fill="#00A6EB" viewBox="0 0 24 24" stroke="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" />
-            <circle cx="12" cy="12" r="6" fill="none" stroke="#00A6EB" strokeWidth="2"/>
-            <circle cx="12" cy="12" r="2" />
-        </svg>
-    )
-};
-
-function FlashCard({ card }) {
-    const [flipped, setFlipped] = useState(false);
-    const cardRef = React.useRef(null);
-
-    const toggleFlip = () => setFlipped(!flipped);
-
-    return (
-        <div
-            className="perspective-1000 m-4 w-full sm:w-[340px] cursor-pointer" style={{height: '200px'}}
-            onClick={toggleFlip}
-            aria-label={`Flashcard ${card.term}`}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleFlip()}
-        >
-            <div
-                ref={cardRef}
-                className={
-                    `relative transform-style-3d duration-500 ease-in-out ` +
-                    (flipped ? 'rotate-y-180' : '')
-                }
-                style={{height: '100%'}}
-            >
-                {/* Front */}
-                <div className="absolute w-full h-full backface-hidden bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-start ring-2 ring-primary">
-                    <div className="flex items-center space-x-3 mb-2 text-primary">
-                        {ICONS[card.icon]}
-                        <h3 className="text-xl font-extrabold">{card.term}</h3>
-                    </div>
-                    <p className="text-primary font-semibold italic">{card.sub}</p>
-                </div>
-                {/* Back */}
-                <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-primary text-white rounded-lg shadow-lg p-6 flex items-center animate-fade-in">
-                    <p className="text-sm leading-relaxed">{card.def}</p>
-                </div>
-            </div>
+const grid = document.getElementById('grid');
+CARDS.forEach(c => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+        <div class="face face-front">
+            <div class="card-icon">${c.icon}</div>
+            <div class="card-term">${c.term}</div>
+            <div class="card-sub">${c.sub}</div>
+            <span class="card-hint">Tap to reveal ↗</span>
         </div>
-    );
+        <div class="face face-back">
+            <div class="back-label">${c.term}</div>
+            <div class="card-def">${c.def}</div>
+        </div>`;
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+    grid.appendChild(card);
+});
+function ping() {
+    const h = document.documentElement.scrollHeight;
+    if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
 }
-
-function App() {
-    React.useEffect(() => {
-        // Resize on mount and on any update (no dependencies other than mount)
-        const sendHeight = () => {
-            const h = document.documentElement.scrollHeight;
-            if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
-        };
-        const observer = new ResizeObserver(sendHeight);
-        observer.observe(document.body);
-        setTimeout(sendHeight, 250);
-        setTimeout(sendHeight, 500);
-        return () => observer.disconnect();
-    }, []);
-
-    return (
-        <main className="p-4 flex flex-wrap justify-center">
-            {CARDS.map(card => <FlashCard key={card.id} card={card} />)}
-        </main>
-    );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+new ResizeObserver(ping).observe(document.body);
+setTimeout(ping, 150); setTimeout(ping, 500);
 </script>
 </body>
 </html>
