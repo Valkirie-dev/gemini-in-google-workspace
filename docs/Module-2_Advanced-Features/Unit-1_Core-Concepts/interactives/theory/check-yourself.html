@@ -1,250 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Check Yourself Quiz</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <script>
-        tailwind.config = {
-            theme: { extend: {
-                colors: {
-                    primary: '#00A6EB', accent: '#E60036', dark: '#302A40',
-                    muted: '#5f6c7b', lightblue: '#81D0F4', darkblue: '#2A668E',
-                    slate: '#937C8A'
-                },
-                fontFamily: { sans: ['Manrope', 'sans-serif'] }
-            }}
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Yourself</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Manrope', sans-serif;
-            background-color: transparent;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        #root {
-            width: 100%;
-            display: flow-root;
-        }
-        .fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .btn-primary {
-            background-color: #00A6EB;
-            color: white;
-            font-weight: 700;
-            padding: 0.5rem 1.25rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover:not(:disabled) {
-            background-color: #0086c9;
-        }
-        .btn-disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .correct {
-            color: #059669; /* green-600 */
-            font-weight: 700;
-        }
-        .incorrect {
-            color: #dc2626; /* red-600 */
-            font-weight: 700;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'Manrope', system-ui, sans-serif; background: transparent; margin: 0; padding: 16px; overflow: hidden; color: #1e293b; }
+        .questions { display: flex; flex-direction: column; gap: 14px; }
+        .q-card { background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 20px 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .q-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+        .q-num { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 28px; background: #00A6EB; color: white; border-radius: 50%; font-size: 12px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+        .q-text { font-size: 14.5px; font-weight: 700; color: #1e293b; line-height: 1.5; margin: 0; }
+        .options { display: flex; flex-direction: column; gap: 8px; }
+        .opt { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: border-color 0.15s, background 0.15s; user-select: none; }
+        .opt:hover:not(.disabled) { border-color: #00A6EB; background: #f0f9ff; }
+        .opt.selected { border-color: #00A6EB; background: #e0f2fe; }
+        .opt.correct  { border-color: #22c55e; background: #f0fdf4; }
+        .opt.wrong    { border-color: #ef4444; background: #fef2f2; }
+        .opt.disabled { cursor: default; }
+        .dot { width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s; }
+        .opt.selected .dot { border-color: #00A6EB; }
+        .opt.correct  .dot { border-color: #22c55e; }
+        .opt.wrong    .dot { border-color: #ef4444; }
+        .dot-inner { width: 8px; height: 8px; border-radius: 50%; display: none; }
+        .opt.selected .dot-inner { display: block; background: #00A6EB; }
+        .opt.correct  .dot-inner { display: block; background: #22c55e; }
+        .opt.wrong    .dot-inner { display: block; background: #ef4444; }
+        .opt-text { font-size: 13.5px; font-weight: 500; color: #334155; line-height: 1.4; }
+        .feedback { margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; display: none; }
+        .feedback.ok  { background: #f0fdf4; color: #166534; border-left: 3px solid #22c55e; display: block; }
+        .feedback.bad { background: #fef2f2; color: #991b1b; border-left: 3px solid #ef4444; display: block; }
+        .submit-row { margin-top: 20px; display: flex; justify-content: center; }
+        .btn { padding: 13px 44px; font-family: 'Manrope', system-ui, sans-serif; font-size: 14px; font-weight: 800; border: none; border-radius: 50px; cursor: pointer; transition: background 0.2s, transform 0.15s; letter-spacing: 0.02em; }
+        .btn-submit { background: #00A6EB; color: white; }
+        .btn-submit:hover:not(:disabled) { background: #0082c0; transform: translateY(-1px); }
+        .btn-submit:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-retry  { background: #302A40; color: white; }
+        .btn-retry:hover { background: #1e1a29; }
+        .score-card { margin-top: 20px; text-align: center; padding: 28px 24px; background: white; border: 1.5px solid #e2e8f0; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .score-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 8px; }
+        .score-num { font-size: 56px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+        .score-num.pass { color: #22c55e; }
+        .score-num.fail { color: #ef4444; }
+        .score-msg { font-size: 15px; font-weight: 600; color: #475569; margin-bottom: 22px; }
     </style>
 </head>
 <body>
 <div id="root"></div>
-
-<script type="text/babel">
-const { useState, useEffect } = React;
-
-const QUESTIONS = [
-    {
-        id: 1,
-        question: "What is the primary function of Gemini in Google Workspace?",
-        options: [
-            { id: 'A', text: "To act as a standalone social media platform." },
-            { id: 'B', text: "To enhance productivity through integrated generative AI capabilities." },
-            { id: 'C', text: "To replace the need for a Google Account." }
-        ],
-        correctId: 'B',
-        explanation: "Gemini assists with tasks like document creation and data analysis within Workspace apps using generative AI."
-    },
-    {
-        id: 2,
-        question: "Which of the following is a recommended security measure when signing in on a public device?",
-        options: [
-            { id: 'A', text: "Sharing your password with the network administrator." },
-            { id: 'B', text: 'Using the "Forgot email?" link every time you log in.' },
-            { id: 'C', text: "Utilizing a private browsing window or Guest mode." }
-        ],
-        correctId: 'C',
-        explanation: "Google advises using private browsing or Guest mode on computers that are not your own to protect account security."
-    },
-    {
-        id: 3,
-        question: "With which group of applications does Gemini integrate seamlessly?",
-        options: [
-            { id: 'A', text: "Gmail, Docs, Sheets, and Slides." },
-            { id: 'B', text: "Only third-party web browsers." },
-            { id: 'C', text: "Legacy offline word processors only." }
-        ],
-        correctId: 'A',
-        explanation: "Gemini integrates directly with core Workspace apps like Gmail, Docs, Sheets, and Slides."
-    },
-    {
-        id: 4,
-        question: 'What does "contextual AI assistance" mean in the context of Gemini?',
-        options: [
-            { id: 'A', text: "The AI only works when connected to a specific office Wi-Fi." },
-            { id: 'B', text: "The AI support adapts to specific professional and organizational needs." },
-            { id: 'C', text: "The AI provides the same generic response regardless of the application." }
-        ],
-        correctId: 'B',
-        explanation: "Gemini offers AI help tailored to different tasks and user requirements."
-    },
-    {
-        id: 5,
-        question: "What credentials are required to sign in and access Gemini's features?",
-        options: [
-            { id: 'A', text: "A Google Account (Email or phone)." },
-            { id: 'B', text: "A physical security key only." },
-            { id: 'C', text: "An employee ID number from a non-Google database." }
-        ],
-        correctId: 'A',
-        explanation: "Access requires signing in with a Google Account using email or phone number."
-    }
+<script>
+const Q = [
+    { id:1, text:"What is the primary function of Gemini in Google Workspace?",
+      opts:[{id:'A',t:"To act as a standalone social media platform."},{id:'B',t:"To enhance productivity through integrated generative AI capabilities."},{id:'C',t:"To replace the need for a Google Account."}],
+      correct:'B', expl:"Gemini assists with document creation, data analysis, and more within Workspace apps using generative AI." },
+    { id:2, text:"Which is a recommended security measure when signing in on a public device?",
+      opts:[{id:'A',t:"Sharing your password with the network administrator."},{id:'B',t:'Using the "Forgot email?" link every time you log in.'},{id:'C',t:"Utilizing a private browsing window or Guest mode."}],
+      correct:'C', expl:"Google advises using private browsing or Guest mode on computers that are not your own." },
+    { id:3, text:"With which group of applications does Gemini integrate seamlessly?",
+      opts:[{id:'A',t:"Gmail, Docs, Sheets, and Slides."},{id:'B',t:"Only third-party web browsers."},{id:'C',t:"Legacy offline word processors only."}],
+      correct:'A', expl:"Gemini integrates directly with core Workspace apps: Gmail, Docs, Sheets, and Slides." },
+    { id:4, text:'What does "contextual AI assistance" mean in the context of Gemini?',
+      opts:[{id:'A',t:"The AI only works when connected to a specific office Wi-Fi."},{id:'B',t:"The AI support adapts to specific professional and organizational needs."},{id:'C',t:"The AI provides the same generic response regardless of the application."}],
+      correct:'B', expl:"Gemini offers AI help tailored to different tasks and user requirements within each application." },
+    { id:5, text:"What credentials are required to sign in and access Gemini's features?",
+      opts:[{id:'A',t:"A Google Account (Email or phone)."},{id:'B',t:"A physical security key only."},{id:'C',t:"An employee ID number from a non-Google database."}],
+      correct:'A', expl:"Access requires signing in with a Google Account using email or phone number." }
 ];
-
-function Quiz() {
-    const [answers, setAnswers] = React.useState({});
-    const [submitted, setSubmitted] = React.useState(false);
-    const [score, setScore] = React.useState(null);
-
-    React.useEffect(() => {
-        if (window.ActivityClient) {
-            window.ActivityClient.registerActivity(QUESTIONS.length);
+let answers = {}, submitted = false;
+function render() {
+    const qHtml = Q.map((q,qi) => {
+        const optsHtml = q.opts.map(o => {
+            let cls = 'opt';
+            const sel = answers[q.id] === o.id;
+            if (sel) cls += ' selected';
+            if (submitted) {
+                cls += ' disabled';
+                if (sel) cls += (o.id === q.correct) ? ' correct' : ' wrong';
+            }
+            return `<div class="${cls}" data-q="${q.id}" data-o="${o.id}">
+                <div class="dot"><div class="dot-inner"></div></div>
+                <span class="opt-text">${o.id}) ${o.t}</span>
+            </div>`;
+        }).join('');
+        let fb = '';
+        if (submitted && answers[q.id]) {
+            const ok = answers[q.id] === q.correct;
+            fb = `<div class="feedback ${ok?'ok':'bad'}">${ok ? '✓ Correct!' : '✗ Incorrect. ' + q.expl}</div>`;
         }
-    }, []);
-
-    React.useEffect(() => {
-        // Resize on mount, answers change, submit change
-        const sendHeight = () => {
-            const h = document.documentElement.scrollHeight;
-            if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
-        };
-        sendHeight();
-        const observer = new ResizeObserver(sendHeight);
-        observer.observe(document.body);
-        return () => observer.disconnect();
-    }, [answers, submitted]);
-
-    function selectOption(qid, oid) {
-        if (submitted) return; // no change after submit
-        setAnswers(prev => ({ ...prev, [qid]: oid }));
+        return `<div class="q-card">
+            <div class="q-header"><span class="q-num">${qi+1}</span><p class="q-text">${q.text}</p></div>
+            <div class="options">${optsHtml}</div>${fb}
+        </div>`;
+    }).join('');
+    const allDone = Q.every(q => answers[q.id]);
+    let bottom = '';
+    if (!submitted) {
+        bottom = `<div class="submit-row"><button class="btn btn-submit" id="sbmt" ${allDone?'':'disabled'}>Submit Answers</button></div>`;
+    } else {
+        const sc = Q.filter(q => answers[q.id]===q.correct).length;
+        const pass = sc >= Math.ceil(Q.length * 0.6);
+        bottom = `<div class="score-card">
+            <div class="score-label">Your Score</div>
+            <div class="score-num ${pass?'pass':'fail'}">${sc}/${Q.length}</div>
+            <div class="score-msg">${pass ? '🎉 Great work! You passed.' : 'Review the material and try again.'}</div>
+            <button class="btn btn-retry" id="retry">↺ Try Again</button>
+        </div>`;
     }
-
-    function onSubmit() {
-        if (Object.keys(answers).length !== QUESTIONS.length) {
-            alert("Please answer all questions before submitting.");
-            return;
-        }
-        let correctCount = 0;
-        QUESTIONS.forEach(q => {
-            if (answers[q.id] === q.correctId) correctCount++;
-        });
-        setScore(correctCount);
-        setSubmitted(true);
-        if (window.ActivityClient) {
-            window.ActivityClient.sendScore(null, correctCount, QUESTIONS.length);
-        }
-    }
-
-    function onTryAgain() {
-        setAnswers({});
-        setSubmitted(false);
-        setScore(null);
-    }
-
-    return (
-        <div className="p-4 max-w-3xl mx-auto">
-            <h1 className="text-2xl font-extrabold text-dark mb-5">Check Yourself</h1>
-            <form onSubmit={e => { e.preventDefault(); onSubmit(); }}>
-                {QUESTIONS.map(q => {
-                    const userAns = answers[q.id];
-                    const isSubmitted = submitted;
-                    let feedbackClass = "";
-                    if (isSubmitted) {
-                        feedbackClass = (userAns === q.correctId) ? "correct" : "incorrect";
-                    }
-                    return (
-                        <fieldset key={q.id} className="mb-6 p-4 rounded-lg bg-white ring-1 ring-gray-300" style={{backgroundColor: '#ffffff'}}>
-                            <legend className="font-semibold mb-2 text-dark">{q.id}. {q.question}</legend>
-                            <div role="radiogroup" aria-labelledby={`question-${q.id}`}>
-                                {q.options.map(o => {
-                                    const checked = userAns === o.id;
-                                    const isCorrect = o.id === q.correctId;
-                                    const showFeedback = isSubmitted && checked;
-                                    return (
-                                        <label key={o.id} className={`flex items-center mb-1 cursor-pointer select-none p-1 rounded
-                                            ${showFeedback ? (checked && isCorrect ? 'bg-green-100 text-green-800' : (checked && !isCorrect ? 'bg-red-100 text-red-800' : '')) : ''}
-                                            `}>
-                                            <input
-                                                type="radio"
-                                                name={`q-${q.id}`}
-                                                value={o.id}
-                                                checked={checked || false}
-                                                disabled={submitted}
-                                                onChange={() => selectOption(q.id, o.id)}
-                                                className="mr-3"
-                                                aria-checked={checked}
-                                            />
-                                            <span>{o.id}) {o.text}</span>
-                                        </label>
-                                    );
-                                })}
-                            </div>
-                            {submitted && (
-                                <p className={`${feedbackClass} mt-2 font-semibold`}>
-                                    {userAns === q.correctId ? "Correct!" : `Incorrect. ${q.explanation}`}
-                                </p>
-                            )}
-                        </fieldset>
-                    );
-                })}
-                <div className="flex space-x-4">
-                    {!submitted ? (
-                        <button type="submit" disabled={Object.keys(answers).length !== QUESTIONS.length}
-                            className={`btn-primary ${Object.keys(answers).length !== QUESTIONS.length ? 'btn-disabled' : ''}`}>
-                            Submit
-                        </button>
-                    ) : (
-                        <button type="button" onClick={onTryAgain} className="btn-primary">Try Again</button>
-                    )}
-                    {submitted && (
-                        <div className="text-dark font-bold self-center">
-                            Score: {score} / {QUESTIONS.length}
-                        </div>
-                    )}
-                </div>
-            </form>
-        </div>
+    document.getElementById('root').innerHTML = `<div class="questions">${qHtml}</div>${bottom}`;
+    document.querySelectorAll('.opt:not(.disabled)').forEach(el =>
+        el.addEventListener('click', () => { answers[el.dataset.q] = el.dataset.o; render(); ping(); })
     );
+    const sb = document.getElementById('sbmt');
+    if (sb) sb.addEventListener('click', () => {
+        const sc = Q.filter(q => answers[q.id]===q.correct).length;
+        submitted = true; render(); ping();
+        if (window.ActivityClient) window.ActivityClient.sendScore(null, sc, Q.length);
+    });
+    const rb = document.getElementById('retry');
+    if (rb) rb.addEventListener('click', () => { answers={}; submitted=false; render(); ping(); });
 }
-
-ReactDOM.createRoot(document.getElementById('root')).render(<Quiz />);
+function ping() {
+    const h = document.documentElement.scrollHeight;
+    if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
+}
+window.addEventListener('load', () => { if (window.ActivityClient) window.ActivityClient.registerActivity(Q.length); });
+render();
+new ResizeObserver(ping).observe(document.body);
+setTimeout(ping, 150); setTimeout(ping, 500);
 </script>
-
 <script src='../../../../util/scripts/client.js'></script>
 </body>
 </html>
