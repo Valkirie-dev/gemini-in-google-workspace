@@ -1,0 +1,35 @@
+image::../images/header.jpg[Hat, width=100%]
+
+= Module 2: Advanced Features
+
+== Module Overview
+====
+
+This module deepens your mastery of AI-enhanced productivity by focusing on advanced features within Google Workspace, centred on Gemini's integration.
+
+The goal of this module is to enable IT professionals to leverage Gemini’s AI capabilities to streamline workflows, enhance communication, and maintain rigorous security and compliance standards.
+
+====
+
+== Key Learning Points
+
+====
+
+* Harnessing Gemini’s AI powers within Gmail for smarter email management.
+* Understanding contextual smart replies and email summarisation.
+* Applying advanced prompting and grounding techniques.
+* Managing enterprise-grade security and administrative controls.
+
+====
+
+=== *List of Units*
+
+====
+
+defind::env-name[:relfilesuffix: .adoc]
+
+* xref:Unit-2_Gemini-in-Gmail/unit-2_main.adoc[Unit 2: Gemini in Gmail]
+
+====
+
+image::../images/footer.png[Under, width=100%]

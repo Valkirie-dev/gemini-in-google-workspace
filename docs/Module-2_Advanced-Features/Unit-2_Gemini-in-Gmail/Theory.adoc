@@ -1,0 +1,109 @@
+<script src='../../util/scripts/dynamicResizeScript.js'></script>
+<script src='../../util/scripts/tracker.js'></script>
+
+image::../../images/header.jpg[Hat, width=100%]
+
+= Theory. Gemini in Gmail
+
+Gemini in Gmail integrates advanced AI capabilities directly into email communication, enhancing productivity through *AI-powered email drafting, smart replies, and email summarisation*. This unit explores how Gemini leverages large language models and contextual understanding to transform everyday email tasks for IT professionals.
+
+== AI-Powered Email Drafting with "Help Me Write"
+
+*AI-powered email drafting* uses Gemini’s large language models (LLMs) to generate contextual and relevant email drafts from natural language prompts. When a user clicks "Compose" or replies to a message, they can activate *Help me write* to generate an initial draft, which can then be refined using tools that adjust tone, length, and clarity.
+
+The drafting process grounds itself in existing conversation history and user inputs, ensuring responses are specific and accurate rather than generic. One-click refinement options such as "Formalize", "Shorten", and "Simplify" enable users to tailor drafts quickly.
+
+For IT professionals, this means automating routine communications, referencing specific documents stored in Google Drive via the "@" symbol to maintain factual accuracy, and focusing on strategic tasks rather than manual writing.
+
+=== Key Terms
+
+- *Prompt*: The natural language instruction defining the AI task.
+- *Grounding*: Linking AI output to live data or documents for accuracy.
+- *Refinement*: Tools adjusting email tone, length, or style.
+- *Gems*: Custom AI assistants trained with organizational language.
+- *Multimodality*: Gemini’s ability to process diverse inputs (text, images, code).
+
+++++
+<iframe id="cards-frame"
+        src="interactives/theory/key-terms.html" 
+        style="width: 100%; border: none; overflow: hidden;"
+        scrolling="no">
+</iframe>
+++++
+
+== Contextual Smart Replies for Rapid Triage
+
+Gemini’s *Contextual Smart Replies* utilize machine learning to analyze entire email threads and generate concise, context-aware reply suggestions. Unlike basic one-tap responses, these suggestions adapt tone and content based on thread history, ensuring nuanced and appropriate communication.
+
+This feature operates automatically when emails are received, presenting users with suggested replies they can preview before sending. It accelerates response to common inquiries and support tickets without compromising personalization.
+
+IT professionals benefit by reducing manual typing while maintaining responsiveness and accuracy, for example, quickly acknowledging support tickets with replies informed by conversation context.
+
+=== Key Terms
+
+- *Contextual Smart Reply*: AI-generated reply options that reflect thread context.
+- *Machine Learning (ML)*: Predictive modeling trained on large datasets.
+- *Natural Language Processing (NLP)*: AI's ability to understand and generate human language.
+- *Context Awareness*: Understanding message history for relevant responses.
+
+== Email Summarisation and Thread Management
+
+Gemini’s *email summarisation* condenses long or complex email threads into concise overviews, highlighting key points and action items. Supported by large context windows, Gemini processes extensive conversation data to extract essential information for rapid comprehension.
+
+Users activate summarisation via the “Summarize this email” button or side panel to generate summaries and extract actionable next steps. This capability reduces information overload and expedites handling of technical escalations and long threads.
+
+IT managers save time by quickly identifying outstanding issues and decisions without reading every message.
+
+=== Key Terms
+
+- *LLM*: The AI model enabling text generation and summarisation.
+- *Context Window*: The amount of content the model can process simultaneously.
+- *Grounding*: Ensuring AI-generated summaries are factually accurate.
+- *Hallucination*: AI inaccuracies requiring human review.
+
+== Advanced Prompting and Contextual Grounding
+
+Effective use of Gemini's drafting and reply tools depends on prompt quality. The *Persona-Task-Context-Format (PTCF)* framework guides users in constructing prompts specifying who Gemini should emulate, the task, context, and output format. Referencing internal documents with "@" tags grounds AI responses in accurate data.
+
+Mastering prompting reduces generic or inaccurate outputs, making prompt engineering essential for IT professionals to fully leverage Gemini’s capabilities.
+
+Important reminders include avoiding vague prompts and understanding grounding’s role to maintain precision.
+
+++++
+<iframe id="workflow-frame"
+        src="interactives/theory/phases.html" 
+        style="width: 100%; border: none; overflow: hidden;"
+        scrolling="no">
+</iframe>
+++++
+
+== Security and Administrative Controls
+
+Enterprise-grade *security and controls* enable GDPR-, HIPAA-, SOC-, and FedRAMP-compliant use of Gemini in Gmail. IT administrators can configure data loss prevention (DLP) policies, AI classification labels, and access permissions to protect sensitive information while promoting responsible AI adoption.
+
+This administrative governance ensures confidentiality and compliance without sacrificing productivity enhancements delivered by Gemini.
+
+== Check Yourself
+
+++++
+<iframe id="quiz-frame"
+        src="interactives/theory/check-yourself.html"
+        style="width: 100%; border: none; overflow: hidden;"
+        scrolling="no">
+</iframe>
+++++
+
+== Summary
+
+++++
+<iframe src="../../util/scripts/summary.html" style="width: 100%; border: none; overflow: hidden; min-height: 150px;" scrolling="no"></iframe>
+++++
+
+====
+
+image::../../images/footer.png[Under, width=100%]
+
+++++
+<script src='../../util/scripts/slides.js'></script>
+<script src='../../util/scripts/moodle-resizer.js'></script>
+++++

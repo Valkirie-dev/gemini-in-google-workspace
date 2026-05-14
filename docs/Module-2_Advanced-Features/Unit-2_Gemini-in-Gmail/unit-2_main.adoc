@@ -1,0 +1,24 @@
+image::../../images/header.jpg[Hat, width=100%]
+
+= Unit 2: Gemini in Gmail
+
+Gemini in Gmail integrates advanced AI capabilities directly into email communication, enhancing productivity through *AI-powered email drafting, smart replies, and email summarisation*. This unit explores how Gemini leverages large language models and contextual understanding to transform everyday email tasks for IT professionals.
+
+* **AI-Powered Email Drafting with "Help Me Write":** Generate and refine email drafts using Gemini’s large language models grounded in conversation history.
+* **Contextual Smart Replies for Rapid Triage:** Employ machine learning to create context-aware reply suggestions to accelerate email responses.
+* **Email Summarisation and Thread Management:** Condense long email threads into concise summaries highlighting key points and action items.
+* **Advanced Prompting and Contextual Grounding:** Use the Persona-Task-Context-Format framework to craft effective AI prompts and avoid generic outputs.
+* **Security and Administrative Controls:** Understand enterprise-grade compliance and governance for responsible Gemini use in Gmail.
+
+== *List of materials*
+
+====
+
+defind::env-name[:relfilesuffix: .adoc]
+
+* xref:Theory.adoc[Theory]
+* xref:Practice.adoc[Practice]
+
+====
+
+image::../../images/footer.png[Under, width=100%]
