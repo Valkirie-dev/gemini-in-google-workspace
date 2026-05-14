@@ -188,7 +188,7 @@ function Quiz() {
                         feedbackClass = (userAns === q.correctId) ? "correct" : "incorrect";
                     }
                     return (
-                        <fieldset key={q.id} className="mb-6 p-4 rounded-lg bg-white dark:bg-gray-800 ring-1 ring-gray-300 dark:ring-gray-700">
+                        <fieldset key={q.id} className="mb-6 p-4 rounded-lg bg-white ring-1 ring-gray-300" style={{backgroundColor: '#ffffff'}}>
                             <legend className="font-semibold mb-2 text-dark">{q.id}. {q.question}</legend>
                             <div role="radiogroup" aria-labelledby={`question-${q.id}`}>
                                 {q.options.map(o => {
