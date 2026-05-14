@@ -4,6 +4,9 @@ image::../../images/header.jpg[Hat, width=100%]
 
 == Theory
 
-include::Theory.adoc[]
+iifdef::env-name[:relfilesuffix: .adoc]
+
+* xref:Theory.adoc[Theory]
+* xref:Practice.adoc[Practice]
 
 image::../../images/footer.png[Under, width=100%]
