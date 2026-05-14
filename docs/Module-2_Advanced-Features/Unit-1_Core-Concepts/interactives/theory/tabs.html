@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workflow Tabs</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: {
+                    primary: '#00A6EB', accent: '#E60036', dark: '#302A40',
+                    muted: '#5f6c7b', lightblue: '#81D0F4', darkblue: '#2A668E',
+                    slate: '#937C8A'
+                },
+                fontFamily: { sans: ['Manrope', 'sans-serif'] }
+            }}
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: transparent;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #root {
+            width: 100%;
+            display: flow-root;
+        }
+        /* Fade animation */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .tab-button {
+            @apply px-4 py-2 cursor-pointer font-semibold;
+        }
+        .tab-active {
+            border-bottom-width: 3px;
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+/*
+Extracted multi-step process from "Administration and Organizational Alignment" section:
+Steps of setup and deployment for admin and end-users.
+
+TABS = [
+  {
+    id: "setup",
+    title: "Initial Setup",
+    subtitle: "Account Creation & Credential Recovery",
+    colorVar: "var(--primary)",
+    steps: [
+      { title: "Account Creation", desc: "Admins oversee account creation and credential recovery including 'Forgot email?' to ensure consistent and secure access to the workspace." },
+      { title: "Credential Recovery", desc: "Procedure for recovering access if users forget credentials, ensuring minimum disruption." }
+    ]
+  },
+  {
+    id: "deployment",
+    title: "Global Deployment",
+    subtitle: "Localization & Language Support",
+    colorVar: "var(--accent)",
+    steps: [
+      { title: "Localization", desc: "Align AI-driven productivity tools with linguistic and regional needs using supported global languages including Español, Français, 日本語, and Deutsch." },
+      { title: "User Training", desc: "Educate users on best practices including session security and compliance through Help resources." }
+    ]
+  },
+  {
+    id: "security",
+    title: "Security Best Practices",
+    subtitle: "Session Management & Compliance",
+    colorVar: "var(--primary)",
+    steps: [
+      { title: "Session Security", desc: "Enforce use of private browsing or Guest mode to protect company data when accessing accounts on shared or public computers." },
+      { title: "Compliance", desc: "Ensure users review Help, Privacy, and Terms to align with organizational AI policies." }
+    ]
+  }
+];
+*/
+
+const TABS = [
+    {
+        id: "setup",
+        title: "Initial Setup",
+        subtitle: "Account Creation & Credential Recovery",
+        colorVar: "var(--primary)",
+        steps: [
+            {
+                title: "Account Creation",
+                desc: "Admins oversee account creation and credential recovery including 'Forgot email?' to ensure consistent and secure access to the workspace."
+            },
+            {
+                title: "Credential Recovery",
+                desc: "Procedure for recovering access if users forget credentials, ensuring minimum disruption."
+            }
+        ]
+    },
+    {
+        id: "deployment",
+        title: "Global Deployment",
+        subtitle: "Localization & Language Support",
+        colorVar: "var(--accent)",
+        steps: [
+            {
+                title: "Localization",
+                desc: "Align AI-driven productivity tools with linguistic and regional needs using supported global languages including Español, Français, 日本語, and Deutsch."
+            },
+            {
+                title: "User Training",
+                desc: "Educate users on best practices including session security and compliance through Help resources."
+            }
+        ]
+    },
+    {
+        id: "security",
+        title: "Security Best Practices",
+        subtitle: "Session Management & Compliance",
+        colorVar: "var(--primary)",
+        steps: [
+            {
+                title: "Session Security",
+                desc: "Enforce use of private browsing or Guest mode to protect company data when accessing accounts on shared or public computers."
+            },
+            {
+                title: "Compliance",
+                desc: "Ensure users review Help, Privacy, and Terms to align with organizational AI policies."
+            }
+        ]
+    }
+];
+
+function TabHeaders({ tabs, activeTabId, onChange }) {
+    return (
+        <div className="flex border-b border-gray-300 dark:border-gray-700 overflow-x-auto">
+            {tabs.map((tab, i) => {
+                const isActive = tab.id === activeTabId;
+                const underlineStyle = isActive ? { borderBottomColor: tab.colorVar } : {};
+                return (
+                    <button
+                        key={tab.id}
+                        onClick={() => onChange(tab.id)}
+                        style={underlineStyle}
+                        className={`tab-button ${isActive ? 'tab-active text-dark dark:text-lightblue' : 'text-muted hover:text-primary'}`}
+                        aria-selected={isActive}
+                        role="tab"
+                        tabIndex={isActive ? 0 : -1}
+                    >
+                        {tab.title}
+                    </button>
+                );
+            })}
+        </div>
+    );
+}
+
+function StepCard({ step, colorVar }) {
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 m-2 flex-1 min-w-[240px] max-w-xs ring-1 ring-gray-300 dark:ring-gray-700">
+            <h4 className="font-bold mb-1" style={{ color: colorVar }}>{step.title}</h4>
+            <p className="text-sm text-slate">{step.desc}</p>
+        </div>
+    );
+}
+
+function ContentPanel({ tab }) {
+    return (
+        <section className="p-4 animate-fade-in">
+            <header className="mb-3">
+                <h2 className="text-2xl font-extrabold text-dark mb-1">{tab.title}</h2>
+                <span className="inline-block px-2 py-1 rounded bg-primary text-white text-xs font-semibold" style={{ backgroundColor: tab.colorVar }}>
+                    {tab.subtitle}
+                </span>
+            </header>
+            <div className="flex flex-wrap justify-start">
+                {tab.steps.map((step, idx) => (
+                    <StepCard key={idx} step={step} colorVar={tab.colorVar} />
+                ))}
+            </div>
+        </section>
+    );
+}
+
+function App() {
+    const [activeTabId, setActiveTabId] = React.useState(TABS[0].id);
+
+    React.useEffect(() => {
+        const sendHeight = () => {
+            const h = document.documentElement.scrollHeight;
+            if (h > 50) window.parent.postMessage({ type: 'resize', height: h }, '*');
+        };
+        sendHeight();
+        const observer = new ResizeObserver(sendHeight);
+        observer.observe(document.body);
+        return () => observer.disconnect();
+    }, [activeTabId]);
+
+    const activeTab = TABS.find(tab => tab.id === activeTabId);
+
+    return (
+        <main role="tabpanel" aria-labelledby={activeTabId} className="p-4">
+            <TabHeaders tabs={TABS} activeTabId={activeTabId} onChange={setActiveTabId} />
+            <ContentPanel tab={activeTab} />
+        </main>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
