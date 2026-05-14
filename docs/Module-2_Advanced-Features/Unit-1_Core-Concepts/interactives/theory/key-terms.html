@@ -137,7 +137,7 @@ function FlashCard({ card }) {
 
     return (
         <div
-            className="perspective-1000 m-4 w-full sm:w-[340px] cursor-pointer"
+            className="perspective-1000 m-4 w-full sm:w-[340px] cursor-pointer" style={{height: '200px'}}
             onClick={toggleFlip}
             aria-label={`Flashcard ${card.term}`}
             role="button"
@@ -147,12 +147,13 @@ function FlashCard({ card }) {
             <div
                 ref={cardRef}
                 className={
-                    `relative transform-style-3d duration-500 ease-in-out ` + 
+                    `relative transform-style-3d duration-500 ease-in-out ` +
                     (flipped ? 'rotate-y-180' : '')
                 }
+                style={{height: '100%'}}
             >
                 {/* Front */}
-                <div className="absolute w-full h-full backface-hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col justify-center items-start ring-2 ring-primary">
+                <div className="absolute w-full h-full backface-hidden bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center items-start ring-2 ring-primary">
                     <div className="flex items-center space-x-3 mb-2 text-primary">
                         {ICONS[card.icon]}
                         <h3 className="text-xl font-extrabold">{card.term}</h3>
